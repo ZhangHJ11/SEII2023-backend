@@ -63,7 +63,66 @@ public class GSeriesSeatStrategy extends TrainSeatStrategy {
     public @Nullable String allocSeat(int startStationIndex, int endStationIndex, GSeriesSeatType type, boolean[][] seatMap) {
         //endStationIndex - 1 = upper bound
         // TODO
-        return null;
+        boolean flag;
+        switch (type) {
+            case BUSINESS_SEAT -> {
+                for (int i = 0; i < BUSINESS_SEAT_MAP.size(); i++) {
+                    flag = true;
+                    for (int j = startStationIndex; j < endStationIndex; j++) {
+                        if (seatMap[j][i]) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if (flag) {
+                        for (int j = startStationIndex; j < endStationIndex; j++) {
+                            seatMap[j][i] = true;
+                        }
+                        return BUSINESS_SEAT_MAP.get(i);
+                    }
+                }
+                return "";
+            }
+            case FIRST_CLASS_SEAT -> {
+                for (int i = BUSINESS_SEAT_MAP.size(); i < FIRST_CLASS_SEAT_MAP.size(); i++) {
+                    flag = true;
+                    for (int j = startStationIndex; j < endStationIndex; j++) {
+                        if (seatMap[j][i]) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if (flag) {
+                        for (int j = startStationIndex; j < endStationIndex; j++) {
+                            seatMap[j][i] = true;
+                        }
+                        return BUSINESS_SEAT_MAP.get(i);
+                    }
+                }
+                return "";
+            }
+            case SECOND_CLASS_SEAT -> {
+                for (int i = FIRST_CLASS_SEAT_MAP.size(); i < SECOND_CLASS_SEAT_MAP.size(); i++) {
+                    flag = true;
+                    for (int j = startStationIndex; j < endStationIndex; j++) {
+                        if (seatMap[j][i]) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if (flag) {
+                        for (int j = startStationIndex; j < endStationIndex; j++) {
+                            seatMap[j][i] = true;
+                        }
+                        return BUSINESS_SEAT_MAP.get(i);
+                    }
+                }
+                return "";
+            }
+            default -> {
+                return "";
+            }
+        }
     }
 
     public Map<GSeriesSeatType, Integer> getLeftSeatCount(int startStationIndex, int endStationIndex, boolean[][] seatMap) {

@@ -67,7 +67,84 @@ public class KSeriesSeatStrategy extends TrainSeatStrategy {
 
     public @Nullable String allocSeat(int startStationIndex, int endStationIndex, KSeriesSeatType type, boolean[][] seatMap) {
         //endStationIndex - 1 = upper bound
-        return null;
+        boolean flag;
+        switch (type) {
+            case SOFT_SLEEPER_SEAT -> {
+                for (int i = 0; i < SOFT_SLEEPER_SEAT_MAP.size(); i++) {
+                    flag = true;
+                    for (int j = startStationIndex; j < endStationIndex; j++) {
+                        if (seatMap[j][i]) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if (flag) {
+                        for (int j = startStationIndex; j < endStationIndex; j++) {
+                            seatMap[j][i] = true;
+                        }
+                        return SOFT_SLEEPER_SEAT_MAP.get(i);
+                    }
+                }
+                return "";
+            }
+            case HARD_SLEEPER_SEAT -> {
+                for (int i = SOFT_SLEEPER_SEAT_MAP.size(); i < HARD_SLEEPER_SEAT_MAP.size(); i++) {
+                    flag = true;
+                    for (int j = startStationIndex; j < endStationIndex; j++) {
+                        if (seatMap[j][i]) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if (flag) {
+                        for (int j = startStationIndex; j < endStationIndex; j++) {
+                            seatMap[j][i] = true;
+                        }
+                        return HARD_SLEEPER_SEAT_MAP.get(i);
+                    }
+                }
+                return "";
+            }
+            case SOFT_SEAT -> {
+                for (int i = HARD_SLEEPER_SEAT_MAP.size(); i < SOFT_SEAT_MAP.size(); i++) {
+                    flag = true;
+                    for (int j = startStationIndex; j < endStationIndex; j++) {
+                        if (seatMap[j][i]) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if (flag) {
+                        for (int j = startStationIndex; j < endStationIndex; j++) {
+                            seatMap[j][i] = true;
+                        }
+                        return SOFT_SEAT_MAP.get(i);
+                    }
+                }
+                return "";
+            }
+            case HARD_SEAT -> {
+                for (int i = SOFT_SEAT_MAP.size(); i < HARD_SEAT_MAP.size(); i++) {
+                    flag = true;
+                    for (int j = startStationIndex; j < endStationIndex; j++) {
+                        if (seatMap[j][i]) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if (flag) {
+                        for (int j = startStationIndex; j < endStationIndex; j++) {
+                            seatMap[j][i] = true;
+                        }
+                        return HARD_SEAT_MAP.get(i);
+                    }
+                }
+                return "";
+            }
+            default -> {
+                return "";
+            }
+        }
     }
 
     public Map<KSeriesSeatType, Integer> getLeftSeatCount(int startStationIndex, int endStationIndex, boolean[][] seatMap) {
