@@ -57,7 +57,7 @@ public class TrainServiceImpl implements TrainService {
             if(start!=-1 && end!=-1 && start <= end){
 //                success find station && start before end
                 if(Objects.equals(train.getDate(), date)){
-//                    success find date TODO : change trainVo
+//                    success find date
                     TrainVO trainVO = TrainMapper.INSTANCE.toTrainVO(train);
                     trainVO.setStartStationId(startStationId);
                     trainVO.setEndStationId(endStationId);

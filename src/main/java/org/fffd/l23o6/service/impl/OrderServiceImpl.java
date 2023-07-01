@@ -7,6 +7,7 @@ import org.fffd.l23o6.dao.OrderDao;
 import org.fffd.l23o6.dao.RouteDao;
 import org.fffd.l23o6.dao.TrainDao;
 import org.fffd.l23o6.dao.UserDao;
+import org.fffd.l23o6.pojo.entity.UserEntity;
 import org.fffd.l23o6.pojo.enum_.OrderStatus;
 import org.fffd.l23o6.exception.BizError;
 import org.fffd.l23o6.pojo.entity.OrderEntity;
@@ -103,6 +104,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // TODO: refund user's money and credits if needed
+        UserEntity user = userDao.findById(order.getUserId()).get();
 
         order.setStatus(OrderStatus.CANCELLED);
         orderDao.save(order);
@@ -117,9 +119,23 @@ public class OrderServiceImpl implements OrderService {
 
         // TODO: use payment strategy to pay!
         // TODO: update user's credits, so that user can get discount next time
+        UserEntity user = userDao.findById(order.getUserId()).get();
+//        根据不同的起始站和到达站给用户增加不同积分
 
         order.setStatus(OrderStatus.COMPLETED);
         orderDao.save(order);
     }
 
+    public double priceCalculator(double price, int userMiles){
+        // 定义里程积分范围和对应的折扣率表格 表驱动
+        int[] ranges = {0, 1000, 3000, 10000, 50000, Integer.MAX_VALUE};
+        double[] discounts = {0, 0.001, 0.0015, 0.002, 0.0025, 0.003};
+        // 判断用户的里程积分属于哪个范围
+        int range = 0;
+        while (range < ranges.length - 1 && userMiles >= ranges[range + 1]) {
+            range++;
+        }
+        // 根据折扣率计算订单价格
+        return price * (1 - discounts[range]);
+    }
 }

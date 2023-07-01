@@ -43,4 +43,6 @@ public class UserEntity {
 
     @UpdateTimestamp
     private Date updatedAt;
+
+    private Long MileagePoints;
 }
