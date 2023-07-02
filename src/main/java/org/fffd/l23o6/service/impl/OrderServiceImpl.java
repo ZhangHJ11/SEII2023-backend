@@ -7,12 +7,12 @@ import org.fffd.l23o6.dao.OrderDao;
 import org.fffd.l23o6.dao.RouteDao;
 import org.fffd.l23o6.dao.TrainDao;
 import org.fffd.l23o6.dao.UserDao;
-import org.fffd.l23o6.pojo.entity.UserEntity;
-import org.fffd.l23o6.pojo.enum_.OrderStatus;
 import org.fffd.l23o6.exception.BizError;
 import org.fffd.l23o6.pojo.entity.OrderEntity;
 import org.fffd.l23o6.pojo.entity.RouteEntity;
 import org.fffd.l23o6.pojo.entity.TrainEntity;
+import org.fffd.l23o6.pojo.entity.UserEntity;
+import org.fffd.l23o6.pojo.enum_.OrderStatus;
 import org.fffd.l23o6.pojo.vo.order.OrderVO;
 import org.fffd.l23o6.service.OrderService;
 import org.fffd.l23o6.util.strategy.train.GSeriesSeatStrategy;
@@ -63,7 +63,7 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderVO> listOrders(String username) {
         Long userId = userDao.findByUsername(username).getId();
         List<OrderEntity> orders = orderDao.findByUserId(userId);
-        orders.sort((o1,o2)-> o2.getId().compareTo(o1.getId()));
+        orders.sort((o1, o2) -> o2.getId().compareTo(o1.getId()));
         return orders.stream().map(order -> {
             TrainEntity train = trainDao.findById(order.getTrainId()).get();
             RouteEntity route = routeDao.findById(train.getRouteId()).get();
@@ -120,16 +120,16 @@ public class OrderServiceImpl implements OrderService {
         // TODO: use payment strategy to pay!
         // TODO: update user's credits, so that user can get discount next time
         UserEntity user = userDao.findById(order.getUserId()).get();
-//        根据不同的起始站和到达站给用户增加不同积分
+        // 根据不同的起始站和到达站给用户增加不同积分
 
         order.setStatus(OrderStatus.COMPLETED);
         orderDao.save(order);
     }
 
-    public double priceCalculator(double price, int userMiles){
+    public double priceCalculator(double price, int userMiles) {
         // 定义里程积分范围和对应的折扣率表格 表驱动
-        int[] ranges = {0, 1000, 3000, 10000, 50000, Integer.MAX_VALUE};
-        double[] discounts = {0, 0.001, 0.0015, 0.002, 0.0025, 0.003};
+        int[] ranges = { 0, 1000, 3000, 10000, 50000, Integer.MAX_VALUE };
+        double[] discounts = { 0, 0.001, 0.0015, 0.002, 0.0025, 0.003 };
         // 判断用户的里程积分属于哪个范围
         int range = 0;
         while (range < ranges.length - 1 && userMiles >= ranges[range + 1]) {
