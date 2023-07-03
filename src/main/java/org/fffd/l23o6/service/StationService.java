@@ -6,7 +6,12 @@ import org.fffd.l23o6.pojo.vo.station.StationVO;
 
 public interface StationService {
     public StationVO getStation(Long stationId);
+
     public List<StationVO> listStations();
+
     public void addStation(String name);
+
     public void editStation(Long stationId, String name);
+
+    public void deleteStation(Long id);
 }

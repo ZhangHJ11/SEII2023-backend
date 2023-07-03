@@ -1,14 +1,23 @@
 package org.fffd.l23o6.controller;
 
-import io.github.lyc8503.spring.starter.incantation.pojo.CommonResponse;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.fffd.l23o6.pojo.vo.route.AddRouteRequest;
 import org.fffd.l23o6.pojo.vo.route.RouteVO;
 import org.fffd.l23o6.service.RouteService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import io.github.lyc8503.spring.starter.incantation.pojo.CommonResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RestController
@@ -34,8 +43,15 @@ public class RouteController {
     }
 
     @PutMapping("admin/route/{routeId}")
-    public CommonResponse<?> editRoute(@PathVariable("routeId") Long routeId, @Valid @RequestBody AddRouteRequest request) {
+    public CommonResponse<?> editRoute(@PathVariable("routeId") Long routeId,
+            @Valid @RequestBody AddRouteRequest request) {
         routeService.editRoute(routeId, request.getName(), request.getStationIds());
+        return CommonResponse.success();
+    }
+
+    @DeleteMapping("admin/route/{routeId}")
+    public CommonResponse<?> deleteRoute(@PathVariable("routeId") Long routeId) {
+        routeService.deleteRoute(routeId);
         return CommonResponse.success();
     }
 }
