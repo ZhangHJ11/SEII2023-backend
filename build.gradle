@@ -20,6 +20,8 @@ repositories {
 }
 
 dependencies {
+    implementation group: 'com.alipay.sdk', name: 'alipay-sdk-java', version: '4.38.4.ALL'
+
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
     // Used for data validation
@@ -78,7 +80,8 @@ publishing {
     repositories {
         maven {
             name = 'sampleRepo'
-            url = layout.buildDirectory.dir("repo")
+//            url = layout.buildDirectory.dir("repo")
+            url = 'https://maven.aliyun.com/nexus/content/groups/public/'
         }
     }
 }
