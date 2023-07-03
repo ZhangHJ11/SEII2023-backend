@@ -50,9 +50,14 @@ public class RegisterRequest {
     private String phone;
 
     @Schema(description = "证件类型", required = true)
-    @NotNull
     @Pattern.List({
-            @Pattern(regexp = "^身份证|护照|其他$", message = "证件类型错误"),
+            @Pattern(regexp = "^0|1|2$", message = "证件类型错误"), //0 身份证 1 护照 2 其他
     })
-    private String type;
+    private int idType;
+
+    @Schema(description = "是否为管理员", required = true)
+    @Pattern.List({
+            @Pattern(regexp = "", message = "用户角色错误"),
+    })
+    private boolean isAdmin;
 }

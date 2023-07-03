@@ -35,9 +35,14 @@ public class EditUserInfoRequest {
     private String phone;
 
     @Schema(description = "证件类型", required = true)
-    @NotNull
     @Pattern.List({
-            @Pattern(regexp = "^身份证|护照|其他$", message = "证件类型错误"),
+            @Pattern(regexp = "^0|1|2$", message = "证件类型错误"),
     })
-    private String type;
+    private int idType;
+
+    @Schema(description = "是否为管理员",required= true)
+    @Pattern.List({
+            @Pattern(regexp = "^false|true$",message = "用户身份错误"),
+    })
+    private boolean isAdmin;
 }

@@ -4,8 +4,10 @@ import org.fffd.l23o6.pojo.entity.UserEntity;
 
 public interface UserService {
     void login(String username, String password);
-    void register(String username, String password, String name, String idn, String phone, String type);
+
+    void register(String username, String password, String name, String idn, String phone, int idType, boolean isAdmin);
 
     UserEntity findByUserName(String username);
-    void editInfo(String username, String name, String idn, String phone, String type);
+
+    void editInfo(String username, String name, String idn, String phone, int idType);
 }

@@ -8,5 +8,6 @@ public class UserVO {
     private String name;
     private String phone;
     private String idn;
-    private String type;
+    private int idType;
+    private boolean isAdmin;
 }

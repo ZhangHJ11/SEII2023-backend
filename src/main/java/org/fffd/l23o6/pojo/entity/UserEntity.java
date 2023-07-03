@@ -32,10 +32,11 @@ public class UserEntity {
     private String username;
     @NotNull
     private String password;
+    private boolean isAdmin;
 
     private String name;
     private String phone;
-    private String type;
+    private int idType;
     private String idn;
 
     @CreationTimestamp

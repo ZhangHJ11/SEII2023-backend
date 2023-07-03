@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+
     @PostMapping("session")
     public CommonResponse<?> login(@Valid @RequestBody LoginRequest request) {
         // Throws BizException if auth failed.
@@ -30,7 +31,7 @@ public class UserController {
     @PostMapping("user")
     public CommonResponse<?> register(@Valid @RequestBody RegisterRequest request) {
         // Throws BizException if register failed.
-        userService.register(request.getUsername(), request.getPassword(), request.getName(), request.getIdn(), request.getPhone(), request.getType());
+        userService.register(request.getUsername(), request.getPassword(), request.getName(), request.getIdn(), request.getPhone(), request.getIdType(), request.isAdmin());
 
         return CommonResponse.success();
     }
@@ -50,7 +51,7 @@ public class UserController {
     @PutMapping("user")
     public CommonResponse<?> editInfo(@Valid @RequestBody EditUserInfoRequest request) {
         StpUtil.checkLogin();
-        userService.editInfo(StpUtil.getLoginIdAsString(), request.getName(), request.getIdn(), request.getPhone(), request.getType());
+        userService.editInfo(StpUtil.getLoginIdAsString(), request.getName(), request.getIdn(), request.getPhone(), request.getIdType());
         return CommonResponse.success();
     }
 }

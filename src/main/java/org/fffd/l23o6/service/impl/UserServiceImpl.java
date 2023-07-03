@@ -16,7 +16,7 @@ public class UserServiceImpl implements UserService {
     private final UserDao userDao;
 
     @Override
-    public void register(String username, String password, String name, String idn, String phone, String type) {
+    public void register(String username, String password, String name, String idn, String phone, int idType, boolean isAdmin) {
         UserEntity user = userDao.findByUsername(username);
 
         if (user != null) {
@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
         }
 
         userDao.save(UserEntity.builder().username(username).password(BCrypt.hashpw(password))
-                .name(name).idn(idn).phone(phone).type(type).build());
+                .name(name).idn(idn).phone(phone).idType(idType).isAdmin(isAdmin).build());
     }
 
     @Override
@@ -41,11 +41,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void editInfo(String username, String name, String idn, String phone, String type){
+    public void editInfo(String username, String name, String idn, String phone, int idType) {
         UserEntity user = userDao.findByUsername(username);
-        if(user == null){
+        if (user == null) {
             throw new BizException(CommonErrorType.ILLEGAL_ARGUMENTS, "用户不存在");
         }
-        userDao.save(user.setIdn(idn).setName(name).setPhone(phone).setType(type));
+
+        userDao.save(user.setIdn(idn).setName(name).setPhone(phone).setIdType(idType));
     }
 }
