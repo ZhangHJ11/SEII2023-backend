@@ -49,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
                         KSeriesSeatStrategy.KSeriesSeatType.fromString(seatType), train.getSeats());
                 break;
         }
-        System.out.println("asdasdasdasd1" + seat +  "1asdasdasdasdas" );
+        System.out.println(seat);
         if (seat == null) {
             throw new BizException(BizError.OUT_OF_SEAT);
         }
@@ -98,6 +98,7 @@ public class OrderServiceImpl implements OrderService {
                     .endStationId(order.getArrivalStationId())
                     .departureTime(train.getDepartureTimes().get(startIndex))
                     .arrivalTime(train.getArrivalTimes().get(endIndex))
+                    .money(order.getMoney())
                     .build();
         }).collect(Collectors.toList());
     }
@@ -115,6 +116,7 @@ public class OrderServiceImpl implements OrderService {
                 .endStationId(order.getArrivalStationId())
                 .departureTime(train.getDepartureTimes().get(startIndex))
                 .arrivalTime(train.getArrivalTimes().get(endIndex))
+                .money(order.getMoney())
                 .build();
     }
 
