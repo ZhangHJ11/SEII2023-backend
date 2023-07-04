@@ -19,8 +19,6 @@ import io.swagger.v3.oas.models.info.Info;
 public class L23o6Application {
     public static void main(String[] args) {
         SpringApplication.run(L23o6Application.class, args);
-//        支付宝接口
-        doPost DoPost = new doPost();
     }
 
     @Bean
