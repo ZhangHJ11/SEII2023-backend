@@ -74,9 +74,13 @@ public class KSeriesSeatStrategy extends TrainSeatStrategy {
             boolean[][] seatMap) {
         // endStationIndex - 1 = upper bound
         boolean flag;
+        int i1 = 0;
+        int i2 = SOFT_SLEEPER_SEAT_MAP.size();
+        int i3 = i2 + HARD_SLEEPER_SEAT_MAP.size();
+        int i4 = i3 + SOFT_SEAT_MAP.size();
         switch (type) {
             case SOFT_SLEEPER_SEAT -> {
-                for (int i = 0; i < SOFT_SLEEPER_SEAT_MAP.size(); i++) {
+                for (int i = i1; i < i2; i++) {
                     flag = true;
                     for (int j = startStationIndex; j < endStationIndex; j++) {
                         if (seatMap[j][i]) {
@@ -91,10 +95,10 @@ public class KSeriesSeatStrategy extends TrainSeatStrategy {
                         return SOFT_SLEEPER_SEAT_MAP.get(i);
                     }
                 }
-                return "";
+                return null;
             }
             case HARD_SLEEPER_SEAT -> {
-                for (int i = SOFT_SLEEPER_SEAT_MAP.size(); i < HARD_SLEEPER_SEAT_MAP.size(); i++) {
+                for (int i = i2; i < i3; i++) {
                     flag = true;
                     for (int j = startStationIndex; j < endStationIndex; j++) {
                         if (seatMap[j][i]) {
@@ -109,10 +113,10 @@ public class KSeriesSeatStrategy extends TrainSeatStrategy {
                         return HARD_SLEEPER_SEAT_MAP.get(i);
                     }
                 }
-                return "";
+                return null;
             }
             case SOFT_SEAT -> {
-                for (int i = HARD_SLEEPER_SEAT_MAP.size(); i < SOFT_SEAT_MAP.size(); i++) {
+                for (int i = i3; i < i4; i++) {
                     flag = true;
                     for (int j = startStationIndex; j < endStationIndex; j++) {
                         if (seatMap[j][i]) {
@@ -127,10 +131,10 @@ public class KSeriesSeatStrategy extends TrainSeatStrategy {
                         return SOFT_SEAT_MAP.get(i);
                     }
                 }
-                return "";
+                return null;
             }
             case HARD_SEAT -> {
-                for (int i = SOFT_SEAT_MAP.size(); i < HARD_SEAT_MAP.size(); i++) {
+                for (int i = i4; i < seatMap[0].length; i++) {
                     flag = true;
                     for (int j = startStationIndex; j < endStationIndex; j++) {
                         if (seatMap[j][i]) {
@@ -145,10 +149,10 @@ public class KSeriesSeatStrategy extends TrainSeatStrategy {
                         return HARD_SEAT_MAP.get(i);
                     }
                 }
-                return "";
+                return null;
             }
             default -> {
-                return "";
+                return null;
             }
         }
     }
