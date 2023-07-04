@@ -3,6 +3,7 @@ package org.fffd.l23o6.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import io.lettuce.core.dynamic.annotation.CommandNaming;
 import org.fffd.l23o6.dao.OrderDao;
 import org.fffd.l23o6.dao.RouteDao;
 import org.fffd.l23o6.dao.TrainDao;
@@ -16,6 +17,8 @@ import org.fffd.l23o6.pojo.enum_.OrderStatus;
 import org.fffd.l23o6.pojo.enum_.TrainType;
 import org.fffd.l23o6.pojo.vo.order.OrderVO;
 import org.fffd.l23o6.service.OrderService;
+import org.fffd.l23o6.util.strategy.payment.AliPaymentStrategy;
+import org.fffd.l23o6.util.strategy.payment.PaymentStrategy;
 import org.fffd.l23o6.util.strategy.train.GSeriesSeatStrategy;
 import org.fffd.l23o6.util.strategy.train.KSeriesSeatStrategy;
 import org.springframework.stereotype.Service;
@@ -30,6 +33,7 @@ public class OrderServiceImpl implements OrderService {
     private final UserDao userDao;
     private final TrainDao trainDao;
     private final RouteDao routeDao;
+    private PaymentStrategy paymentStrategy;
 
     public Long createOrder(String username, Long trainId, Long fromStationId, Long toStationId, String seatType,
             Long seatNumber,int money) {
@@ -134,12 +138,16 @@ public class OrderServiceImpl implements OrderService {
         orderDao.save(order);
     }
 
-    public void payOrder(Long id) {
+    public String payOrder(Long id) {
         OrderEntity order = orderDao.findById(id).get();
 
         if (order.getStatus() != OrderStatus.PENDING_PAYMENT) {
             throw new BizException(BizError.ILLEAGAL_ORDER_STATUS);
         }
+
+        int orderMoney = order.getMoney();
+        this.paymentStrategy = new AliPaymentStrategy();
+        String url = paymentStrategy.doPostTest(String.valueOf(orderMoney));
 
         // TODO: use payment strategy to pay!
         // TODO: update user's credits, so that user can get discount next time
@@ -148,6 +156,7 @@ public class OrderServiceImpl implements OrderService {
 
         order.setStatus(OrderStatus.COMPLETED);
         orderDao.save(order);
+        return url;
     }
 
     public double priceCalculator(double price, int userMiles) {

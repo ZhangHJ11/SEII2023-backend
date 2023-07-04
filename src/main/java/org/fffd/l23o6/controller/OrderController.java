@@ -49,14 +49,17 @@ public class OrderController {
         return CommonResponse.success(orderService.getOrder(orderId));
     }
 
+    @PostMapping("/payOrder")
     @PatchMapping("order/{orderId}")
     public CommonResponse<?> patchOrder(@PathVariable("orderId") Long orderId,
             @Valid @RequestBody PatchOrderRequest request) {
 
         switch (request.getStatus()) {
             case PAID:
-                orderService.payOrder(orderId);
-                break;
+//                System.out.println(CommonResponse.success(orderService.payOrder(orderId)));
+                return CommonResponse.success(orderService.payOrder(orderId));
+//                orderService.payOrder(orderId);
+//                break;
             case CANCELLED:
                 orderService.cancelOrder(orderId);
                 break;
