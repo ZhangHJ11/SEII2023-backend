@@ -6,7 +6,7 @@ import org.fffd.l23o6.pojo.vo.order.OrderVO;
 
 public interface OrderService {
     Long createOrder(String username, Long trainId, Long fromStationId, Long toStationId, String seatType,
-            Long seatNumber);
+            Long seatNumber,int money);
 
     List<OrderVO> listOrders(String username);
 

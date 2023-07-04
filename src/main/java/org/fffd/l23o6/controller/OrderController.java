@@ -35,7 +35,7 @@ public class OrderController {
         StpUtil.checkLogin();
         return CommonResponse
                 .success(new OrderIdVO(orderService.createOrder(StpUtil.getLoginIdAsString(), request.getTrainId(),
-                        request.getStartStationId(), request.getEndStationId(), request.getSeatType(), null)));
+                        request.getStartStationId(), request.getEndStationId(), request.getSeatType(), null,request.getMoney())));
     }
 
     @GetMapping("order")
