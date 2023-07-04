@@ -1,5 +1,6 @@
 package org.fffd.l23o6.pojo.vo.user;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -50,14 +51,12 @@ public class RegisterRequest {
     private String phone;
 
     @Schema(description = "证件类型", required = true)
-    @Pattern.List({
-            @Pattern(regexp = "^0|1|2$", message = "证件类型错误"), //0 身份证 1 护照 2 其他
-    })
-    private int idType;
+    @NotNull
+    @JsonProperty("idType")
+    private Integer idType;
 
     @Schema(description = "是否为管理员", required = true)
-    @Pattern.List({
-            @Pattern(regexp = "", message = "用户角色错误"),
-    })
-    private boolean isAdmin;
+    @NotNull
+    @JsonProperty("isAdmin")
+    private Boolean isAdmin;
 }

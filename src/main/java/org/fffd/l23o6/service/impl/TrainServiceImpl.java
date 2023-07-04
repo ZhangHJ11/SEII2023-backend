@@ -47,17 +47,18 @@ public class TrainServiceImpl implements TrainService {
         // Then, Get all trains on that day with the wanted routes
         List<TrainEntity> trainEntitiesList = trainDao.findAll();
         List<TrainVO> trainVOList = new ArrayList<>();
-        for(TrainEntity train: trainEntitiesList){
+        for (TrainEntity train : trainEntitiesList) {
 //            for each train get the route by routeID
             Long routeID = train.getRouteId();
             RouteEntity routeEntity = routeDao.findById(routeID).get();
 //            find startStation and endStation in the route
             int start = routeEntity.getStationIds().indexOf(startStationId);
             int end = routeEntity.getStationIds().indexOf(endStationId);
-            if(start!=-1 && end!=-1 && start <= end){
+            if (start != -1 && end != -1 && start <= end) {
 //                success find station && start before end
-                if(Objects.equals(train.getDate(), date)){
+                if (Objects.equals(train.getDate(), date)) {
 //                    success find date
+                    System.out.println(train.getName()+" "+train.getDate()+" "+date);
                     TrainVO trainVO = TrainMapper.INSTANCE.toTrainVO(train);
                     trainVO.setStartStationId(startStationId);
                     trainVO.setEndStationId(endStationId);
@@ -78,7 +79,7 @@ public class TrainServiceImpl implements TrainService {
 
     @Override
     public void addTrain(String name, Long routeId, TrainType type, String date, List<Date> arrivalTimes,
-            List<Date> departureTimes) {
+                         List<Date> departureTimes) {
         TrainEntity entity = TrainEntity.builder().name(name).routeId(routeId).trainType(type)
                 .date(date).arrivalTimes(arrivalTimes).departureTimes(departureTimes).build();
         RouteEntity route = routeDao.findById(routeId).get();
@@ -86,7 +87,7 @@ public class TrainServiceImpl implements TrainService {
                 || route.getStationIds().size() != entity.getDepartureTimes().size()) {
             throw new BizException(CommonErrorType.ILLEGAL_ARGUMENTS, "列表长度错误");
         }
-        entity.setExtraInfos(new ArrayList<String>(Collections.nCopies(route.getStationIds().size(), "预计正点")));
+        entity.setExtraInfos(new ArrayList<>(Collections.nCopies(route.getStationIds().size(), "预计正点")));
         switch (entity.getTrainType()) {
             case HIGH_SPEED:
                 entity.setSeats(GSeriesSeatStrategy.INSTANCE.initSeatMap(route.getStationIds().size()));
@@ -108,8 +109,8 @@ public class TrainServiceImpl implements TrainService {
 //        addTrain(name, routeId, type, date, arrivalTimes, departureTimes);
 
 //        这个方法看上去正确一点
-        TrainEntity entity=trainDao.findById(id).get();
-        RouteEntity route=routeDao.findById(routeId).get();
+        TrainEntity entity = trainDao.findById(id).get();
+        RouteEntity route = routeDao.findById(routeId).get();
         if (route.getStationIds().size() != entity.getArrivalTimes().size()
                 || route.getStationIds().size() != entity.getDepartureTimes().size()) {
             throw new BizException(CommonErrorType.ILLEGAL_ARGUMENTS, "列表长度错误");
@@ -121,7 +122,7 @@ public class TrainServiceImpl implements TrainService {
         entity.setArrivalTimes(arrivalTimes);
         entity.setDepartureTimes(departureTimes);
 
-        entity.setExtraInfos(new ArrayList<String>(Collections.nCopies(route.getStationIds().size(), "预计正点")));
+        entity.setExtraInfos(new ArrayList<>(Collections.nCopies(route.getStationIds().size(), "预计正点")));
         switch (type) {
             case HIGH_SPEED:
                 entity.setSeats(GSeriesSeatStrategy.INSTANCE.initSeatMap(route.getStationIds().size()));
