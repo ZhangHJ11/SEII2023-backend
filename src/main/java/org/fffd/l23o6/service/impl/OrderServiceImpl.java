@@ -13,6 +13,7 @@ import org.fffd.l23o6.pojo.entity.RouteEntity;
 import org.fffd.l23o6.pojo.entity.TrainEntity;
 import org.fffd.l23o6.pojo.entity.UserEntity;
 import org.fffd.l23o6.pojo.enum_.OrderStatus;
+import org.fffd.l23o6.pojo.enum_.TrainType;
 import org.fffd.l23o6.pojo.vo.order.OrderVO;
 import org.fffd.l23o6.service.OrderService;
 import org.fffd.l23o6.util.strategy.train.GSeriesSeatStrategy;
@@ -31,7 +32,7 @@ public class OrderServiceImpl implements OrderService {
     private final RouteDao routeDao;
 
     public Long createOrder(String username, Long trainId, Long fromStationId, Long toStationId, String seatType,
-            Long seatNumber) {
+            Long seatNumber,int money) {
         Long userId = userDao.findByUsername(username).getId();
         TrainEntity train = trainDao.findById(trainId).get();
         RouteEntity route = routeDao.findById(train.getRouteId()).get();
@@ -48,12 +49,33 @@ public class OrderServiceImpl implements OrderService {
                         KSeriesSeatStrategy.KSeriesSeatType.fromString(seatType), train.getSeats());
                 break;
         }
+        System.out.println("asdasdasdasd1" + seat +  "1asdasdasdasdas" );
         if (seat == null) {
             throw new BizException(BizError.OUT_OF_SEAT);
         }
+        if(train.getTrainType() == TrainType.HIGH_SPEED){
+            //两站间50，一等座为二等座的两倍，商务座为二等座三倍，无座等同于二等座
+            money = 50;
+            if(seat.equals("一等座")){
+                money *= 2;
+            }
+            if(seat.equals("商务座")) {
+                money *= 3;
+            }
+        }
+        else{
+            money = 10;
+            if(seat.equals("硬卧")){
+                money *= 2;
+            }
+            if(seat.equals("软卧")){
+                money *= 3;
+            }
+        }
+        money *= (endStationIndex - startStationIndex);
         OrderEntity order = OrderEntity.builder().trainId(trainId).userId(userId).seat(seat)
                 .status(OrderStatus.PENDING_PAYMENT).arrivalStationId(toStationId).departureStationId(fromStationId)
-                .build();
+                .money(money).build();
         train.setUpdatedAt(null);// force it to update
         trainDao.save(train);
         orderDao.save(order);

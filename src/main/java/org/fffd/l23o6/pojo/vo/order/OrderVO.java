@@ -17,4 +17,6 @@ public class OrderVO {
     private String status;
     private Date createdAt;
     private String seat;
+
+    private int money;
 }
