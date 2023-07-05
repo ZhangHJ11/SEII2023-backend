@@ -16,6 +16,8 @@ import org.fffd.l23o6.pojo.enum_.OrderStatus;
 import org.fffd.l23o6.pojo.enum_.TrainType;
 import org.fffd.l23o6.pojo.vo.order.OrderVO;
 import org.fffd.l23o6.service.OrderService;
+import org.fffd.l23o6.util.strategy.payment.AliPaymentStrategy;
+import org.fffd.l23o6.util.strategy.payment.PaymentStrategy;
 import org.fffd.l23o6.util.strategy.train.GSeriesSeatStrategy;
 import org.fffd.l23o6.util.strategy.train.KSeriesSeatStrategy;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ public class OrderServiceImpl implements OrderService {
     private final UserDao userDao;
     private final TrainDao trainDao;
     private final RouteDao routeDao;
+    private PaymentStrategy paymentStrategy;
 
     public Long createOrder(String username, Long trainId, Long fromStationId, Long toStationId, String seatType,
             Long seatNumber,int money) {
@@ -133,7 +136,7 @@ public class OrderServiceImpl implements OrderService {
         orderDao.save(order);
     }
 
-    public void payOrder(Long id) {
+    public String payOrder(Long id) {
         OrderEntity order = orderDao.findById(id).get();
 
         if (order.getStatus() != OrderStatus.PENDING_PAYMENT) {
@@ -141,12 +144,17 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // TODO: use payment strategy to pay!
+        int orderMoney = order.getMoney();
+        this.paymentStrategy = new AliPaymentStrategy();
+        String url = paymentStrategy.doPostTest(String.valueOf(orderMoney));
+
         // TODO: update user's credits, so that user can get discount next time
         UserEntity user = userDao.findById(order.getUserId()).get();
         // 根据不同的起始站和到达站给用户增加不同积分
 
         order.setStatus(OrderStatus.COMPLETED);
         orderDao.save(order);
+        return url;
     }
 
     public double priceCalculator(double price, int userMiles) {

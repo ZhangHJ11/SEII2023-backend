@@ -55,8 +55,10 @@ public class OrderController {
 
         switch (request.getStatus()) {
             case PAID:
-                orderService.payOrder(orderId);
-                break;
+                return CommonResponse.success(orderService.payOrder(orderId));
+//                System.out.println(CommonResponse.success(orderService.payOrder(orderId)));
+//                orderService.payOrder(orderId);
+//                break;
             case CANCELLED:
                 orderService.cancelOrder(orderId);
                 break;

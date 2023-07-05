@@ -57,8 +57,6 @@ public class AliPaymentStrategy extends PaymentStrategy{
         } catch (AlipayApiException e) {
             throw new RuntimeException(e);
         }
-
-        System.out.println(urlForm);
         return urlForm;
     }
 }
