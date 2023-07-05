@@ -49,26 +49,25 @@ public class OrderServiceImpl implements OrderService {
                         KSeriesSeatStrategy.KSeriesSeatType.fromString(seatType), train.getSeats());
                 break;
         }
-        System.out.println(seat);
         if (seat == null) {
             throw new BizException(BizError.OUT_OF_SEAT);
         }
         if(train.getTrainType() == TrainType.HIGH_SPEED){
             //两站间50，一等座为二等座的两倍，商务座为二等座三倍，无座等同于二等座
             money = 50;
-            if(seat.equals("一等座")){
+            if(seatType.equals("一等座")){
                 money *= 2;
             }
-            if(seat.equals("商务座")) {
+            if(seatType.equals("商务座")) {
                 money *= 3;
             }
         }
         else{
             money = 10;
-            if(seat.equals("硬卧")){
+            if(seatType.equals("硬卧")){
                 money *= 2;
             }
-            if(seat.equals("软卧")){
+            if(seatType.equals("软卧")){
                 money *= 3;
             }
         }
