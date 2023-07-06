@@ -78,7 +78,7 @@ public class OrderServiceImpl implements OrderService {
         }
         money *= (endStationIndex - startStationIndex);
 
-        user.setPoints(money);
+        user.setPoints(user.getPoints() + money);
 
         OrderEntity order = OrderEntity.builder().trainId(trainId).userId(userId).seat(seat)
                 .status(OrderStatus.PENDING_PAYMENT).arrivalStationId(toStationId).departureStationId(fromStationId)
