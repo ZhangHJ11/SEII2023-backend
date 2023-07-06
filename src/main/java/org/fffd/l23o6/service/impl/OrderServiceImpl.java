@@ -3,6 +3,7 @@ package org.fffd.l23o6.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import cn.dev33.satoken.secure.BCrypt;
 import org.fffd.l23o6.dao.OrderDao;
 import org.fffd.l23o6.dao.RouteDao;
 import org.fffd.l23o6.dao.TrainDao;
@@ -37,6 +38,7 @@ public class OrderServiceImpl implements OrderService {
     public Long createOrder(String username, Long trainId, Long fromStationId, Long toStationId, String seatType,
             Long seatNumber,int money) {
         Long userId = userDao.findByUsername(username).getId();
+        UserEntity user = userDao.findByUsername(username);
         TrainEntity train = trainDao.findById(trainId).get();
         RouteEntity route = routeDao.findById(train.getRouteId()).get();
         int startStationIndex = route.getStationIds().indexOf(fromStationId);
@@ -75,6 +77,9 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         money *= (endStationIndex - startStationIndex);
+
+        user.setPoints(money);
+
         OrderEntity order = OrderEntity.builder().trainId(trainId).userId(userId).seat(seat)
                 .status(OrderStatus.PENDING_PAYMENT).arrivalStationId(toStationId).departureStationId(fromStationId)
                 .money(money).build();
