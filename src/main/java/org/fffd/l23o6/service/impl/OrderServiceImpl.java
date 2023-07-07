@@ -43,6 +43,8 @@ public class OrderServiceImpl implements OrderService {
         int startStationIndex = route.getStationIds().indexOf(fromStationId);
         int endStationIndex = route.getStationIds().indexOf(toStationId);
         String seat = null;
+        System.out.println("正在分配");
+        print(train.getSeats());
         switch (train.getTrainType()) {
             case HIGH_SPEED:
                 seat = GSeriesSeatStrategy.INSTANCE.allocSeat(startStationIndex, endStationIndex,
@@ -149,11 +151,15 @@ public class OrderServiceImpl implements OrderService {
         System.out.println(endStationIndex);
         System.out.println(order.getSeatType());
 
+        print(train.getSeats());
         GSeriesSeatStrategy.INSTANCE.returnSeat(startStationIndex, endStationIndex,
-                order.getSeatType(), train.getSeats());
+                order.getSeatType(),order.getSeat(), train.getSeats());
+        print(train.getSeats());
 
         order.setStatus(OrderStatus.CANCELLED);
+        train.setUpdatedAt(null);
         orderDao.save(order);
+        trainDao.save(train);
     }
 
     public String payOrder(Long id,int payType) {
@@ -201,4 +207,14 @@ public class OrderServiceImpl implements OrderService {
         // 根据折扣率计算订单价格
         return price * (1 - discounts[range]);
     }
+
+     private void print(boolean[][] list){
+        for(int i = 0; i < list.length;i++){
+            for(int t = 0;t < list[0].length;t++){
+                if(list[i][t]) System.out.print("1 ");
+                else System.out.print("0 ");
+            }
+            System.out.println();
+        }
+     }
 }
