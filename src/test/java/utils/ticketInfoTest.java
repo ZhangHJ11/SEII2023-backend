@@ -18,7 +18,6 @@ class ticketInfoTest {
     @Test
     void test_2() throws IOException, ClassNotFoundException {
         TicketInfo ticketInfo=new TicketInfo("type1",10,100);
-        System.out.println(ticketInfo.toByteArray());
         System.out.println(TicketInfo.fromByteArray(ticketInfo.toByteArray()));
     }
 }
