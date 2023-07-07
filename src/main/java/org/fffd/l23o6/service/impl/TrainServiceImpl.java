@@ -1,6 +1,10 @@
 package org.fffd.l23o6.service.impl;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.fffd.l23o6.dao.RouteDao;
@@ -9,11 +13,10 @@ import org.fffd.l23o6.mapper.TrainMapper;
 import org.fffd.l23o6.pojo.entity.RouteEntity;
 import org.fffd.l23o6.pojo.entity.TrainEntity;
 import org.fffd.l23o6.pojo.enum_.TrainType;
-import org.fffd.l23o6.pojo.vo.route.RouteVO;
 import org.fffd.l23o6.pojo.vo.train.AdminTrainVO;
-import org.fffd.l23o6.pojo.vo.train.TrainVO;
 import org.fffd.l23o6.pojo.vo.train.TicketInfo;
 import org.fffd.l23o6.pojo.vo.train.TrainDetailVO;
+import org.fffd.l23o6.pojo.vo.train.TrainVO;
 import org.fffd.l23o6.service.TrainService;
 import org.fffd.l23o6.util.strategy.train.GSeriesSeatStrategy;
 import org.fffd.l23o6.util.strategy.train.KSeriesSeatStrategy;
@@ -48,16 +51,16 @@ public class TrainServiceImpl implements TrainService {
         List<TrainEntity> trainEntitiesList = trainDao.findAll();
         List<TrainVO> trainVOList = new ArrayList<>();
         for (TrainEntity train : trainEntitiesList) {
-//            for each train get the route by routeID
+            // for each train get the route by routeID
             Long routeID = train.getRouteId();
             RouteEntity routeEntity = routeDao.findById(routeID).get();
-//            find startStation and endStation in the route
+            // find startStation and endStation in the route
             int start = routeEntity.getStationIds().indexOf(startStationId);
             int end = routeEntity.getStationIds().indexOf(endStationId);
             if (start != -1 && end != -1 && start <= end) {
-//                success find station && start before end
+                // success find station && start before end
                 if (Objects.equals(train.getDate(), date)) {
-//                    success find date
+                    // success find date
                     System.out.println(train.getName() + " " + train.getDate() + " " + date);
                     TrainVO trainVO = TrainMapper.INSTANCE.toTrainVO(train);
                     trainVO.setStartStationId(startStationId);
@@ -80,7 +83,7 @@ public class TrainServiceImpl implements TrainService {
 
     @Override
     public void addTrain(String name, Long routeId, TrainType type, String date, List<Date> arrivalTimes,
-                         List<Date> departureTimes, List<String> ticketInfos) {
+            List<Date> departureTimes, List<String> ticketInfos) {
         TrainEntity entity = TrainEntity.builder().name(name).routeId(routeId).trainType(type)
                 .date(date).arrivalTimes(arrivalTimes).departureTimes(departureTimes).ticketInfos(ticketInfos).build();
         RouteEntity route = routeDao.findById(routeId).get();
@@ -91,7 +94,14 @@ public class TrainServiceImpl implements TrainService {
         entity.setExtraInfos(new ArrayList<>(Collections.nCopies(route.getStationIds().size(), "预计正点")));
         switch (entity.getTrainType()) {
             case HIGH_SPEED:
-                entity.setSeats(GSeriesSeatStrategy.INSTANCE.initSeatMap(route.getStationIds().size()));
+                try {
+                    initGTrainSeat(entity, TicketInfo.toTicketInfo(ticketInfos));
+                    entity.setSeats(
+                            GSeriesSeatStrategy.getInstance(entity).initSeatMap(route.getStationIds().size()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 break;
             case NORMAL_SPEED:
                 entity.setSeats(KSeriesSeatStrategy.INSTANCE.initSeatMap(route.getStationIds().size()));
@@ -102,14 +112,14 @@ public class TrainServiceImpl implements TrainService {
 
     @Override
     public void changeTrain(Long id, String name, Long routeId, TrainType type, String date, List<Date> arrivalTimes,
-                            List<Date> departureTimes, List<String> ticketInfos) {
+            List<Date> departureTimes, List<String> ticketInfos) {
         // TODO: edit train info, please refer to `addTrain` above
-//        6/30
-//        select the train by id and delete 这个方法如果更改消息出错，会把原来火车信息删除，可能有点问题
-//        trainDao.delete(trainDao.getReferenceById(id));
-//        addTrain(name, routeId, type, date, arrivalTimes, departureTimes);
+        // 6/30
+        // select the train by id and delete 这个方法如果更改消息出错，会把原来火车信息删除，可能有点问题
+        // trainDao.delete(trainDao.getReferenceById(id));
+        // addTrain(name, routeId, type, date, arrivalTimes, departureTimes);
 
-//        这个方法看上去正确一点
+        // 这个方法看上去正确一点
         TrainEntity entity = trainDao.findById(id).get();
         RouteEntity route = routeDao.findById(routeId).get();
         if (route.getStationIds().size() != entity.getArrivalTimes().size()
@@ -123,12 +133,17 @@ public class TrainServiceImpl implements TrainService {
         entity.setArrivalTimes(arrivalTimes);
         entity.setDepartureTimes(departureTimes);
         entity.setTicketInfos(ticketInfos);
-//        entity.setTest(test);
+        // entity.setTest(test);
 
         entity.setExtraInfos(new ArrayList<>(Collections.nCopies(route.getStationIds().size(), "预计正点")));
         switch (type) {
             case HIGH_SPEED:
-                entity.setSeats(GSeriesSeatStrategy.INSTANCE.initSeatMap(route.getStationIds().size()));
+                try {
+                    initGTrainSeat(entity, TicketInfo.toTicketInfo(ticketInfos));
+                    entity.setSeats(GSeriesSeatStrategy.getInstance(entity).initSeatMap(route.getStationIds().size()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
             case NORMAL_SPEED:
                 entity.setSeats(KSeriesSeatStrategy.INSTANCE.initSeatMap(route.getStationIds().size()));
@@ -140,5 +155,30 @@ public class TrainServiceImpl implements TrainService {
     @Override
     public void deleteTrain(Long id) {
         trainDao.deleteById(id);
+    }
+
+    private static void initGTrainSeat(TrainEntity entity, List<TicketInfo> ticketInfoList) {
+        int counter = 1;
+
+        for (TicketInfo t : ticketInfoList) {
+            if (t.type.equals("商务座")) {
+                for (int j = 1; j <= t.count; j++) {
+                    entity.BUSINESS_SEAT_MAP.put(counter, GSeriesSeatStrategy.GeneratedValue(counter, j));
+                    counter++;
+                }
+            } else if (t.type.equals("一等座")) {
+                for (int j = 1; j <= t.count; j++) {
+                    entity.FIRST_CLASS_SEAT_MAP.put(counter,
+                            GSeriesSeatStrategy.GeneratedValue(counter, j));
+                    counter++;
+                }
+            } else if (t.type.equals("二等座")) {
+                for (int j = 1; j <= t.count; j++) {
+                    entity.SECOND_CLASS_SEAT_MAP.put(counter,
+                            GSeriesSeatStrategy.GeneratedValue(counter, j));
+                    counter++;
+                }
+            }
+        }
     }
 }

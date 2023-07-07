@@ -36,7 +36,7 @@ public class OrderController {
         return CommonResponse
                 .success(new OrderIdVO(orderService.createOrder(StpUtil.getLoginIdAsString(), request.getTrainId(),
                         request.getStartStationId(), request.getEndStationId(), request.getSeatType(), null,
-                        request.getMoney())));
+                        request.getMoney(), null)));
     }
 
     @GetMapping("order")
@@ -61,7 +61,7 @@ public class OrderController {
             // orderService.payOrder(orderId);
             // break;
             case CANCELLED:
-                orderService.cancelOrder(orderId, request.getPayType());
+                orderService.cancelOrder(orderId, request.getPayType(), null);
                 break;
             default:
                 throw new BizException(CommonErrorType.ILLEGAL_ARGUMENTS, "Invalid order status.");

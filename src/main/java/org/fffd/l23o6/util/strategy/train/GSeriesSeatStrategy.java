@@ -1,44 +1,43 @@
 package org.fffd.l23o6.util.strategy.train;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
+
+import org.fffd.l23o6.pojo.entity.TrainEntity;
 
 import jakarta.annotation.Nullable;
 
 public class GSeriesSeatStrategy extends TrainSeatStrategy {
-    public static final GSeriesSeatStrategy INSTANCE = new GSeriesSeatStrategy();
+    public static GSeriesSeatStrategy instance;
+    private static TrainEntity train = null;
 
-    private final Map<Integer, String> BUSINESS_SEAT_MAP = new HashMap<>();
-    private final Map<Integer, String> FIRST_CLASS_SEAT_MAP = new HashMap<>();
-    private final Map<Integer, String> SECOND_CLASS_SEAT_MAP = new HashMap<>();
+    public static String GeneratedValue(int i, int j) {
+        return i + "车" + j + (char) (Math.random() % 6 + 'A');
+    }
 
-    private final Map<GSeriesSeatType, Map<Integer, String>> TYPE_MAP = new HashMap<>() {
-        {
-            put(GSeriesSeatType.BUSINESS_SEAT, BUSINESS_SEAT_MAP);
-            put(GSeriesSeatType.FIRST_CLASS_SEAT, FIRST_CLASS_SEAT_MAP);
-            put(GSeriesSeatType.SECOND_CLASS_SEAT, SECOND_CLASS_SEAT_MAP);
+    public static GSeriesSeatStrategy getInstance(TrainEntity t) {
+        if (instance == null) {
+            instance = new GSeriesSeatStrategy();
         }
-    };
+        train = t;
+        return instance;
+    }
 
     private GSeriesSeatStrategy() {
+        // for (String s : Arrays.asList("1车1A", "1车1C", "1车1F")) {
+        // train.BUSINESS_SEAT_MAP.put(counter++, s);
+        // }
 
-        int counter = 0;
+        // for (String s : Arrays.asList("2车1A", "2车1C", "2车1D", "2车1F", "2车2A", "2车2C",
+        // "2车2D", "2车2F", "3车1A", "3车1C",
+        // "3车1D", "3车1F")) {
+        // train.FIRST_CLASS_SEAT_MAP.put(counter++, s);
+        // }
 
-        for (String s : Arrays.asList("1车1A", "1车1C", "1车1F")) {
-            BUSINESS_SEAT_MAP.put(counter++, s);
-        }
-
-        for (String s : Arrays.asList("2车1A", "2车1C", "2车1D", "2车1F", "2车2A", "2车2C", "2车2D", "2车2F", "3车1A", "3车1C",
-                "3车1D", "3车1F")) {
-            FIRST_CLASS_SEAT_MAP.put(counter++, s);
-        }
-
-        for (String s : Arrays.asList("4车1A", "4车1B", "4车1C", "4车1D", "4车2F", "4车2A", "4车2B", "4车2C", "4车2D", "4车2F",
-                "4车3A", "4车3B", "4车3C", "4车3D", "4车3F")) {
-            SECOND_CLASS_SEAT_MAP.put(counter++, s);
-        }
-
+        // for (String s : Arrays.asList("4车1A", "4车1B", "4车1C", "4车1D", "4车2F", "4车2A",
+        // "4车2B", "4车2C", "4车2D", "4车2F",
+        // "4车3A", "4车3B", "4车3C", "4车3D", "4车3F")) {
+        // train.SECOND_CLASS_SEAT_MAP.put(counter++, s);
+        // }
     }
 
     public enum GSeriesSeatType implements SeatType {
@@ -65,31 +64,31 @@ public class GSeriesSeatStrategy extends TrainSeatStrategy {
         }
     }
 
-    public @Nullable void returnSeat(int startStationIndex,int endStationIndex,String seatType,String seat,boolean[][] seatMap){
-        if(seatType.equals("商务座")){
-            for(int i = 0;i < BUSINESS_SEAT_MAP.size();i++){
-                if(seat.equals(BUSINESS_SEAT_MAP.get(i))){
+    public @Nullable void returnSeat(int startStationIndex, int endStationIndex, String seatType, String seat,
+            boolean[][] seatMap) {
+        if (seatType.equals("商务座")) {
+            for (int i = 0; i < train.BUSINESS_SEAT_MAP.size(); i++) {
+                if (seat.equals(train.BUSINESS_SEAT_MAP.get(i))) {
                     for (int j = startStationIndex; j < endStationIndex; j++) {
                         seatMap[j][i] = false;
                     }
                     break;
                 }
             }
-        }
-        else if(seatType.equals("一等座")){
-            for (int i = BUSINESS_SEAT_MAP.size(); i < BUSINESS_SEAT_MAP.size()
-                    + FIRST_CLASS_SEAT_MAP.size(); i++) {
-                if(seat.equals(FIRST_CLASS_SEAT_MAP.get(i))) {
+        } else if (seatType.equals("一等座")) {
+            for (int i = train.BUSINESS_SEAT_MAP.size(); i < train.BUSINESS_SEAT_MAP.size()
+                    + train.FIRST_CLASS_SEAT_MAP.size(); i++) {
+                if (seat.equals(train.FIRST_CLASS_SEAT_MAP.get(i))) {
                     for (int j = startStationIndex; j < endStationIndex; j++) {
                         seatMap[j][i] = false;
                     }
                     break;
                 }
             }
-        }
-        else if(seatType.equals("二等座")){
-            for (int i = BUSINESS_SEAT_MAP.size() + FIRST_CLASS_SEAT_MAP.size(); i < seatMap[0].length; i++) {
-                if(seat.equals(SECOND_CLASS_SEAT_MAP.get(i))) {
+        } else if (seatType.equals("二等座")) {
+            for (int i = train.BUSINESS_SEAT_MAP.size()
+                    + train.FIRST_CLASS_SEAT_MAP.size(); i < seatMap[0].length; i++) {
+                if (seat.equals(train.SECOND_CLASS_SEAT_MAP.get(i))) {
                     for (int j = startStationIndex; j < endStationIndex; j++) {
                         seatMap[j][i] = false;
                     }
@@ -103,10 +102,17 @@ public class GSeriesSeatStrategy extends TrainSeatStrategy {
             boolean[][] seatMap) {
         // endStationIndex - 1 = upper bound
         // TODO
+        System.out.println("1111111111111111111111111111111111111111111111");
+        for (int i = 0; i < seatMap.length; i++) {
+            for (int j = 0; j < seatMap[0].length; j++) {
+                System.out.print(seatMap[i][j] + " ");
+            }
+            System.out.println();
+        }
         boolean flag;
         switch (type) {
             case BUSINESS_SEAT -> {
-                for (int i = 0; i < BUSINESS_SEAT_MAP.size(); i++) {
+                for (int i = 0; i < train.BUSINESS_SEAT_MAP.size(); i++) {
                     flag = true;
                     for (int j = startStationIndex; j < endStationIndex; j++) {
                         if (seatMap[j][i]) {
@@ -118,14 +124,14 @@ public class GSeriesSeatStrategy extends TrainSeatStrategy {
                         for (int j = startStationIndex; j < endStationIndex; j++) {
                             seatMap[j][i] = true;
                         }
-                        return BUSINESS_SEAT_MAP.get(i);
+                        return train.BUSINESS_SEAT_MAP.get(i);
                     }
                 }
                 return null;
             }
             case FIRST_CLASS_SEAT -> {
-                for (int i = BUSINESS_SEAT_MAP.size(); i < BUSINESS_SEAT_MAP.size()
-                        + FIRST_CLASS_SEAT_MAP.size(); i++) {
+                for (int i = train.BUSINESS_SEAT_MAP.size(); i < train.BUSINESS_SEAT_MAP.size()
+                        + train.FIRST_CLASS_SEAT_MAP.size(); i++) {
                     flag = true;
                     for (int j = startStationIndex; j < endStationIndex; j++) {
                         if (seatMap[j][i]) {
@@ -137,13 +143,14 @@ public class GSeriesSeatStrategy extends TrainSeatStrategy {
                         for (int j = startStationIndex; j < endStationIndex; j++) {
                             seatMap[j][i] = true;
                         }
-                        return FIRST_CLASS_SEAT_MAP.get(i);
+                        return train.FIRST_CLASS_SEAT_MAP.get(i);
                     }
                 }
                 return null;
             }
             case SECOND_CLASS_SEAT -> {
-                for (int i = BUSINESS_SEAT_MAP.size() + FIRST_CLASS_SEAT_MAP.size(); i < seatMap[0].length; i++) {
+                for (int i = train.BUSINESS_SEAT_MAP.size()
+                        + train.FIRST_CLASS_SEAT_MAP.size(); i < seatMap[0].length; i++) {
                     flag = true;
                     for (int j = startStationIndex; j < endStationIndex; j++) {
                         if (seatMap[j][i]) {
@@ -155,7 +162,7 @@ public class GSeriesSeatStrategy extends TrainSeatStrategy {
                         for (int j = startStationIndex; j < endStationIndex; j++) {
                             seatMap[j][i] = true;
                         }
-                        return SECOND_CLASS_SEAT_MAP.get(i);
+                        return train.SECOND_CLASS_SEAT_MAP.get(i);
                     }
                 }
                 return null;
@@ -173,7 +180,7 @@ public class GSeriesSeatStrategy extends TrainSeatStrategy {
     }
 
     public boolean[][] initSeatMap(int stationCount) {
-        return new boolean[stationCount - 1][BUSINESS_SEAT_MAP.size() + FIRST_CLASS_SEAT_MAP.size()
-                + SECOND_CLASS_SEAT_MAP.size()];
+        return new boolean[stationCount - 1][train.BUSINESS_SEAT_MAP.size() + train.FIRST_CLASS_SEAT_MAP.size()
+                + train.SECOND_CLASS_SEAT_MAP.size()];
     }
 }

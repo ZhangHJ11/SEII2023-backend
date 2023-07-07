@@ -1,23 +1,27 @@
 package org.fffd.l23o6.pojo.entity;
 
-import jakarta.persistence.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.fffd.l23o6.pojo.enum_.TrainType;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import io.hypersistence.utils.hibernate.type.array.BooleanArrayType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-
-import org.fffd.l23o6.pojo.enum_.TrainType;
-import org.fffd.l23o6.pojo.vo.train.TicketInfo;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import io.hypersistence.utils.hibernate.type.array.BooleanArrayType;
-
-import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table
@@ -67,6 +71,13 @@ public class TrainEntity {
     @NotNull
     private List<String> ticketInfos;
 
-//    @NotNull
-//    private List<Byte> test;
+    @NotNull
+    public Map<Integer, String> BUSINESS_SEAT_MAP;
+    @NotNull
+    public Map<Integer, String> FIRST_CLASS_SEAT_MAP;
+    @NotNull
+    public Map<Integer, String> SECOND_CLASS_SEAT_MAP;
+
+    // @NotNull
+    // private List<Byte> test;
 }

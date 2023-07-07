@@ -1,45 +1,48 @@
 package org.fffd.l23o6.pojo.vo.train;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class TicketInfo implements Serializable {
-    private String type;
-    private Integer count;
-    private Integer price;
-
+    public String type;
+    public Integer count;
+    public Integer price;
 
     public static List<String> toJsonString(List<TicketInfo> ticketInfoList) throws JsonProcessingException {
-        ArrayList<String> jsonStrings=new ArrayList<>();
+        ArrayList<String> jsonStrings = new ArrayList<>();
         ObjectMapper objectMapper = new ObjectMapper();
-        for(TicketInfo ticketInfo:ticketInfoList) {
+        for (TicketInfo ticketInfo : ticketInfoList) {
             jsonStrings.add(objectMapper.writeValueAsString(ticketInfo));
         }
         return jsonStrings;
     }
 
     public static List<TicketInfo> toTicketInfo(List<String> jsonStrings) throws JsonProcessingException {
-        ArrayList<TicketInfo> ticketInfoList=new ArrayList<>();
+        ArrayList<TicketInfo> ticketInfoList = new ArrayList<>();
         ObjectMapper objectMapper = new ObjectMapper();
-        for(String jsonString:jsonStrings) {
+        for (String jsonString : jsonStrings) {
             ticketInfoList.add(objectMapper.readValue(jsonString, TicketInfo.class));
         }
         return ticketInfoList;
     }
 
-
-
-    //abandoned below
+    // abandoned below
     public String toString() {
         return "TicketInfo{" + "type='" + type + '\'' + ", count=" + count + ", price=" + price + '}';
     }
@@ -48,7 +51,8 @@ public class TicketInfo implements Serializable {
         String[] parts = input.split("'");
 
         if (parts.length != 3) {
-            throw new IllegalArgumentException("Invalid input format. Expected format: 'TicketInfo{type='xxx', count=xxx, price=xxx}'.");
+            throw new IllegalArgumentException(
+                    "Invalid input format. Expected format: 'TicketInfo{type='xxx', count=xxx, price=xxx}'.");
         }
 
         String type = parts[1];
