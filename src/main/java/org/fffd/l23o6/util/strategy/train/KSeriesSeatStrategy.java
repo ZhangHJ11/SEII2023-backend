@@ -70,6 +70,43 @@ public class KSeriesSeatStrategy extends TrainSeatStrategy {
         }
     }
 
+    public void returnSeat(int startStationIndex,int endStationIndex,KSeriesSeatType type, boolean[][] seatMap){
+        //true 代表已经占用
+        int i1 = 0;
+        int i2 = SOFT_SLEEPER_SEAT_MAP.size();
+        int i3 = i2 + HARD_SLEEPER_SEAT_MAP.size();
+        int i4 = i3 + SOFT_SEAT_MAP.size();
+        switch (type) {
+            case SOFT_SLEEPER_SEAT -> {
+                for(int i = i1;i < i2;i++){
+                    for (int j = startStationIndex; j < endStationIndex; j++) {
+                        seatMap[j][i] = false;
+                    }
+                }
+            }
+            case HARD_SLEEPER_SEAT -> {
+                for (int i = i2; i < i3; i++) {
+                    for (int j = startStationIndex; j < endStationIndex; j++) {
+                        seatMap[j][i] = false;
+                    }
+                }
+            }
+            case SOFT_SEAT -> {
+                for (int i = i3; i < i4; i++) {
+                    for (int j = startStationIndex; j < endStationIndex; j++) {
+                        seatMap[j][i] = false;
+                    }
+                }
+            }
+            case HARD_SEAT -> {
+                for (int i = i4; i < seatMap[0].length; i++) {
+                    for (int j = startStationIndex; j < endStationIndex; j++) {
+                        seatMap[j][i] = false;
+                    }
+                }
+            }
+        }
+    }
     public @Nullable String allocSeat(int startStationIndex, int endStationIndex, KSeriesSeatType type,
             boolean[][] seatMap) {
         // endStationIndex - 1 = upper bound

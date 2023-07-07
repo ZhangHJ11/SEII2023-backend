@@ -64,6 +64,34 @@ public class GSeriesSeatStrategy extends TrainSeatStrategy {
         }
     }
 
+    public void returnSeat(int startStationIndex,int endStationIndex,String type,boolean[][] seatMap){
+        if(type.equals("商务座")){
+            System.out.println("in return");
+            for (int i = 0; i < BUSINESS_SEAT_MAP.size(); i++) {
+                for (int j = startStationIndex; j < endStationIndex; j++) {
+                    seatMap[j][i] = false;
+                }
+            }
+        }
+        else if(type.equals("一等座")){
+            System.out.println("in return");
+            for (int i = BUSINESS_SEAT_MAP.size(); i < BUSINESS_SEAT_MAP.size()
+                    + FIRST_CLASS_SEAT_MAP.size(); i++) {
+                for (int j = startStationIndex; j < endStationIndex; j++) {
+                    seatMap[j][i] = false;
+                }
+            }
+        }
+        else if(type.equals("二等座")){
+            System.out.println("in return");
+            for (int i = BUSINESS_SEAT_MAP.size() + FIRST_CLASS_SEAT_MAP.size(); i < seatMap[0].length; i++) {
+                for (int j = startStationIndex; j < endStationIndex; j++) {
+                    seatMap[j][i] = false;
+                }
+            }
+        }
+    }
+
     public @Nullable String allocSeat(int startStationIndex, int endStationIndex, GSeriesSeatType type,
             boolean[][] seatMap) {
         // endStationIndex - 1 = upper bound

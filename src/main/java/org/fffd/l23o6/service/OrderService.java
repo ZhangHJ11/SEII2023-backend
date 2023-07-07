@@ -14,5 +14,5 @@ public interface OrderService {
 
     void cancelOrder(Long id);
 
-    String payOrder(Long id);
+    String payOrder(Long id,int payType);
 }

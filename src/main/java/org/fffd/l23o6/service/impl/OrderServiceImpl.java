@@ -3,7 +3,6 @@ package org.fffd.l23o6.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import cn.dev33.satoken.secure.BCrypt;
 import org.fffd.l23o6.dao.OrderDao;
 import org.fffd.l23o6.dao.RouteDao;
 import org.fffd.l23o6.dao.TrainDao;
@@ -19,6 +18,7 @@ import org.fffd.l23o6.pojo.vo.order.OrderVO;
 import org.fffd.l23o6.service.OrderService;
 import org.fffd.l23o6.util.strategy.payment.AliPaymentStrategy;
 import org.fffd.l23o6.util.strategy.payment.PaymentStrategy;
+import org.fffd.l23o6.util.strategy.payment.PointsPaymentStrategy;
 import org.fffd.l23o6.util.strategy.train.GSeriesSeatStrategy;
 import org.fffd.l23o6.util.strategy.train.KSeriesSeatStrategy;
 import org.springframework.stereotype.Service;
@@ -38,7 +38,6 @@ public class OrderServiceImpl implements OrderService {
     public Long createOrder(String username, Long trainId, Long fromStationId, Long toStationId, String seatType,
             Long seatNumber,int money) {
         Long userId = userDao.findByUsername(username).getId();
-        UserEntity user = userDao.findByUsername(username);
         TrainEntity train = trainDao.findById(trainId).get();
         RouteEntity route = routeDao.findById(train.getRouteId()).get();
         int startStationIndex = route.getStationIds().indexOf(fromStationId);
@@ -57,9 +56,22 @@ public class OrderServiceImpl implements OrderService {
         if (seat == null) {
             throw new BizException(BizError.OUT_OF_SEAT);
         }
-        if(train.getTrainType() == TrainType.HIGH_SPEED){
-            //两站间50，一等座为二等座的两倍，商务座为二等座三倍，无座等同于二等座
-            money = 50;
+
+        //这个后面可以抽象出方法，已有方法要求距离，但是好像我们没那玩意
+        money = calculateMoney(50,train.getTrainType(),seatType,endStationIndex-startStationIndex);
+
+        OrderEntity order = OrderEntity.builder().trainId(trainId).userId(userId).seat(seat)
+                .status(OrderStatus.PENDING_PAYMENT).arrivalStationId(toStationId).departureStationId(fromStationId)
+                .money(money).seatType(seatType).build();
+        train.setUpdatedAt(null);// force it to update
+        trainDao.save(train);
+        orderDao.save(order);
+        return order.getId();
+    }
+
+    private int calculateMoney(int priceBetweenTwoStations,TrainType trainType,String seatType,int stations){
+        int money = priceBetweenTwoStations;
+        if(trainType == TrainType.HIGH_SPEED){
             if(seatType.equals("一等座")){
                 money *= 2;
             }
@@ -68,7 +80,6 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         else{
-            money = 10;
             if(seatType.equals("硬卧")){
                 money *= 2;
             }
@@ -76,17 +87,7 @@ public class OrderServiceImpl implements OrderService {
                 money *= 3;
             }
         }
-        money *= (endStationIndex - startStationIndex);
-
-        user.setPoints(user.getPoints() + money);
-
-        OrderEntity order = OrderEntity.builder().trainId(trainId).userId(userId).seat(seat)
-                .status(OrderStatus.PENDING_PAYMENT).arrivalStationId(toStationId).departureStationId(fromStationId)
-                .money(money).build();
-        train.setUpdatedAt(null);// force it to update
-        trainDao.save(train);
-        orderDao.save(order);
-        return order.getId();
+        return money * stations;
     }
 
     public List<OrderVO> listOrders(String username) {
@@ -106,6 +107,7 @@ public class OrderServiceImpl implements OrderService {
                     .departureTime(train.getDepartureTimes().get(startIndex))
                     .arrivalTime(train.getArrivalTimes().get(endIndex))
                     .money(order.getMoney())
+                    .seatType(order.getSeatType())
                     .build();
         }).collect(Collectors.toList());
     }
@@ -124,25 +126,39 @@ public class OrderServiceImpl implements OrderService {
                 .departureTime(train.getDepartureTimes().get(startIndex))
                 .arrivalTime(train.getArrivalTimes().get(endIndex))
                 .money(order.getMoney())
+                .seatType(order.getSeatType())
                 .build();
     }
 
     public void cancelOrder(Long id) {
         OrderEntity order = orderDao.findById(id).get();
-
         if (order.getStatus() == OrderStatus.COMPLETED || order.getStatus() == OrderStatus.CANCELLED) {
             throw new BizException(BizError.ILLEAGAL_ORDER_STATUS);
         }
 
         // TODO: refund user's money and credits if needed
         UserEntity user = userDao.findById(order.getUserId()).get();
+        user.setPoints(user.getPoints() + order.getMoney() * 10);
+
+        TrainEntity train = trainDao.findById(order.getTrainId()).get();
+        RouteEntity route = routeDao.findById(train.getRouteId()).get();
+        int startStationIndex = route.getStationIds().indexOf(order.getDepartureStationId());
+        int endStationIndex = route.getStationIds().indexOf(order.getArrivalStationId());
+
+        System.out.println(startStationIndex);
+        System.out.println(endStationIndex);
+        System.out.println(order.getSeatType());
+
+        GSeriesSeatStrategy.INSTANCE.returnSeat(startStationIndex, endStationIndex,
+                order.getSeatType(), train.getSeats());
 
         order.setStatus(OrderStatus.CANCELLED);
         orderDao.save(order);
     }
 
-    public String payOrder(Long id) {
+    public String payOrder(Long id,int payType) {
         OrderEntity order = orderDao.findById(id).get();
+
 
         if (order.getStatus() != OrderStatus.PENDING_PAYMENT) {
             throw new BizException(BizError.ILLEAGAL_ORDER_STATUS);
@@ -150,14 +166,25 @@ public class OrderServiceImpl implements OrderService {
 
         // TODO: use payment strategy to pay!
         int orderMoney = order.getMoney();
-        this.paymentStrategy = new AliPaymentStrategy();
+        if(payType == 1) {
+            this.paymentStrategy = new AliPaymentStrategy();
+        }
+        else{
+            this.paymentStrategy = new PointsPaymentStrategy();
+        }
         String url = paymentStrategy.doPostTest(String.valueOf(orderMoney));
 
         // TODO: update user's credits, so that user can get discount next time
         UserEntity user = userDao.findById(order.getUserId()).get();
-        // 根据不同的起始站和到达站给用户增加不同积分
-
-        order.setStatus(OrderStatus.COMPLETED);
+        // 根据不同的起始站和到达站给用户增加不同积分,1 元计 1 积分
+        if(paymentStrategy instanceof AliPaymentStrategy){
+            user.setPoints(user.getPoints() + orderMoney);
+        }
+        else {
+            user.setPoints(user.getPoints() - orderMoney * 10);
+        }
+        //order.setStatus(OrderStatus.COMPLETED);
+        order.setStatus(OrderStatus.PAID);
         orderDao.save(order);
         return url;
     }

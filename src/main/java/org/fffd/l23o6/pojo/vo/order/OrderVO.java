@@ -4,6 +4,7 @@ import java.util.Date;
 
 import lombok.Builder;
 import lombok.Data;
+import org.fffd.l23o6.util.strategy.train.TrainSeatStrategy;
 
 @Builder
 @Data
@@ -18,4 +19,5 @@ public class OrderVO {
     private Date createdAt;
     private String seat;
     private int money;
+    private String seatType;
 }

@@ -12,5 +12,5 @@ public class UserVO {
     private boolean isAdmin;
 
     //暂定 10 积分抵扣 1 元，消费一元得到 1 积分
-    private int points;
+    private Integer points;
 }

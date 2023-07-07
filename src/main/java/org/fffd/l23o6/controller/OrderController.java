@@ -7,14 +7,7 @@ import org.fffd.l23o6.pojo.vo.order.OrderIdVO;
 import org.fffd.l23o6.pojo.vo.order.OrderVO;
 import org.fffd.l23o6.pojo.vo.order.PatchOrderRequest;
 import org.fffd.l23o6.service.OrderService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import cn.dev33.satoken.stp.StpUtil;
 import io.github.lyc8503.spring.starter.incantation.exception.BizException;
@@ -51,11 +44,11 @@ public class OrderController {
 
     @PatchMapping("order/{orderId}")
     public CommonResponse<?> patchOrder(@PathVariable("orderId") Long orderId,
-            @Valid @RequestBody PatchOrderRequest request) {
+          @Valid @RequestBody PatchOrderRequest request) {
 
         switch (request.getStatus()) {
             case PAID:
-                return CommonResponse.success(orderService.payOrder(orderId));
+                return CommonResponse.success(orderService.payOrder(orderId,request.getPayType()));
 //                System.out.println(CommonResponse.success(orderService.payOrder(orderId)));
 //                orderService.payOrder(orderId);
 //                break;
