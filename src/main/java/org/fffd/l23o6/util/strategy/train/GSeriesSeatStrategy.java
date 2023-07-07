@@ -42,7 +42,8 @@ public class GSeriesSeatStrategy extends TrainSeatStrategy {
     }
 
     public enum GSeriesSeatType implements SeatType {
-        BUSINESS_SEAT("商务座"), FIRST_CLASS_SEAT("一等座"), SECOND_CLASS_SEAT("二等座"), NO_SEAT("无座");
+        BUSINESS_SEAT("商务座"), FIRST_CLASS_SEAT("一等座"),
+        SECOND_CLASS_SEAT("二等座"), NO_SEAT("无座");
 
         private String text;
 
@@ -61,6 +62,40 @@ public class GSeriesSeatStrategy extends TrainSeatStrategy {
                 }
             }
             return null;
+        }
+    }
+
+    public @Nullable void returnSeat(int startStationIndex,int endStationIndex,String seatType,String seat,boolean[][] seatMap){
+        if(seatType.equals("商务座")){
+            for(int i = 0;i < BUSINESS_SEAT_MAP.size();i++){
+                if(seat.equals(BUSINESS_SEAT_MAP.get(i))){
+                    for (int j = startStationIndex; j < endStationIndex; j++) {
+                        seatMap[j][i] = false;
+                    }
+                    break;
+                }
+            }
+        }
+        else if(seatType.equals("一等座")){
+            for (int i = BUSINESS_SEAT_MAP.size(); i < BUSINESS_SEAT_MAP.size()
+                    + FIRST_CLASS_SEAT_MAP.size(); i++) {
+                if(seat.equals(FIRST_CLASS_SEAT_MAP.get(i))) {
+                    for (int j = startStationIndex; j < endStationIndex; j++) {
+                        seatMap[j][i] = false;
+                    }
+                    break;
+                }
+            }
+        }
+        else if(seatType.equals("二等座")){
+            for (int i = BUSINESS_SEAT_MAP.size() + FIRST_CLASS_SEAT_MAP.size(); i < seatMap[0].length; i++) {
+                if(seat.equals(SECOND_CLASS_SEAT_MAP.get(i))) {
+                    for (int j = startStationIndex; j < endStationIndex; j++) {
+                        seatMap[j][i] = false;
+                    }
+                    break;
+                }
+            }
         }
     }
 

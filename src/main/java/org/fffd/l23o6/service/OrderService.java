@@ -12,7 +12,7 @@ public interface OrderService {
 
     OrderVO getOrder(Long id);
 
-    void cancelOrder(Long id);
+    void cancelOrder(Long id,int payType);
 
-    String payOrder(Long id);
+    String payOrder(Long id,int payType);
 }

@@ -52,4 +52,6 @@ public class OrderEntity {
 
     @NotNull
     private int money;
+    @NotNull
+    private String seatType;
 }

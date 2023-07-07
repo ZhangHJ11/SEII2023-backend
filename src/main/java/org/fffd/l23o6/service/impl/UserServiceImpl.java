@@ -23,8 +23,9 @@ public class UserServiceImpl implements UserService {
             throw new BizException(BizError.USERNAME_EXISTS);
         }
 
+        //注册时积分设置为0
         userDao.save(UserEntity.builder().username(username).password(BCrypt.hashpw(password))
-                .name(name).idn(idn).phone(phone).idType(idType).isAdmin(isAdmin).build());
+                .name(name).idn(idn).phone(phone).idType(idType).isAdmin(isAdmin).points(0).build());
     }
 
     @Override

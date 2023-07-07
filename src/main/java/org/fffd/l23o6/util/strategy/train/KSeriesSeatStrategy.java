@@ -70,6 +70,55 @@ public class KSeriesSeatStrategy extends TrainSeatStrategy {
         }
     }
 
+    public void returnSeat(int startStationIndex,int endStationIndex,String seatType,String seat, boolean[][] seatMap){
+        //true 代表已经占用
+        int i1 = 0;
+        int i2 = SOFT_SLEEPER_SEAT_MAP.size();
+        int i3 = i2 + HARD_SLEEPER_SEAT_MAP.size();
+        int i4 = i3 + SOFT_SEAT_MAP.size();
+        switch (seatType) {
+            case "软卧" -> {
+                for(int i = i1;i < i2;i++){
+                    if(seat.equals(SOFT_SLEEPER_SEAT_MAP.get(i))) {
+                        for (int j = startStationIndex; j < endStationIndex; j++) {
+                            seatMap[j][i] = false;
+                        }
+                        break;
+                    }
+                }
+            }
+            case "硬卧" -> {
+                for (int i = i2; i < i3; i++) {
+                    if(seat.equals(HARD_SLEEPER_SEAT_MAP.get(i))) {
+                        for (int j = startStationIndex; j < endStationIndex; j++) {
+                            seatMap[j][i] = false;
+                        }
+                        break;
+                    }
+                }
+            }
+            case "软座" -> {
+                for (int i = i3; i < i4; i++) {
+                    if(seat.equals(SOFT_SEAT_MAP.get(i))) {
+                        for (int j = startStationIndex; j < endStationIndex; j++) {
+                            seatMap[j][i] = false;
+                        }
+                        break;
+                    }
+                }
+            }
+            case "硬座" -> {
+                for (int i = i4; i < seatMap[0].length; i++) {
+                    if(seat.equals(HARD_SEAT_MAP.get(i))) {
+                        for (int j = startStationIndex; j < endStationIndex; j++) {
+                            seatMap[j][i] = false;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
     public @Nullable String allocSeat(int startStationIndex, int endStationIndex, KSeriesSeatType type,
             boolean[][] seatMap) {
         // endStationIndex - 1 = upper bound
