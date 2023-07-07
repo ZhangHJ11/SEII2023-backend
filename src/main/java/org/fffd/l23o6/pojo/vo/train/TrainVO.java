@@ -20,5 +20,6 @@ public class TrainVO {
     private Long endStationId;
     private Date departureTime;
     private Date arrivalTime;
-    private List<TicketInfo> ticketInfo;
+    private List<String> ticketInfos;
+//    private List<Byte> test;
 }

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import org.fffd.l23o6.pojo.enum_.TrainType;
+import org.fffd.l23o6.pojo.vo.train.TicketInfo;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -62,4 +63,10 @@ public class TrainEntity {
 
     @UpdateTimestamp
     private Date updatedAt;
+
+    @NotNull
+    private List<String> ticketInfos;
+
+//    @NotNull
+//    private List<Byte> test;
 }

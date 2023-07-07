@@ -53,7 +53,7 @@ public class RegisterRequest {
     @Schema(description = "证件类型", required = true)
     @NotNull
     @JsonProperty("idType")
-    private int idType;
+    private Integer idType;
 
     @Schema(description = "是否为管理员", required = true)
     @NotNull

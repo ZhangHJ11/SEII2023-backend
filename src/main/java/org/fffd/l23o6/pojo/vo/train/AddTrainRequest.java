@@ -3,6 +3,7 @@ package org.fffd.l23o6.pojo.vo.train;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -41,4 +42,13 @@ public class AddTrainRequest {
     @NotNull
     private List<Date> departureTimes;
 
+    @Schema(description = "车票信息",required=true)
+    @NotNull
+//    @JsonProperty("ticketInfos")
+    private List<String> ticketInfos;
+
+//    @Schema(description = "test",required=true)
+//    @NotNull
+//    @JsonProperty("test")
+//    private List<Byte> test;
 }

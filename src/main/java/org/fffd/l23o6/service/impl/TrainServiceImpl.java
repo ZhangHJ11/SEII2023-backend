@@ -58,12 +58,13 @@ public class TrainServiceImpl implements TrainService {
 //                success find station && start before end
                 if (Objects.equals(train.getDate(), date)) {
 //                    success find date
-                    System.out.println(train.getName()+" "+train.getDate()+" "+date);
+                    System.out.println(train.getName() + " " + train.getDate() + " " + date);
                     TrainVO trainVO = TrainMapper.INSTANCE.toTrainVO(train);
                     trainVO.setStartStationId(startStationId);
                     trainVO.setEndStationId(endStationId);
                     trainVO.setDepartureTime(train.getDepartureTimes().get(start));
                     trainVO.setArrivalTime(train.getArrivalTimes().get(end));
+                    trainVO.setTicketInfos(train.getTicketInfos());
                     trainVOList.add(trainVO);
                 }
             }
@@ -79,9 +80,9 @@ public class TrainServiceImpl implements TrainService {
 
     @Override
     public void addTrain(String name, Long routeId, TrainType type, String date, List<Date> arrivalTimes,
-                         List<Date> departureTimes) {
+                         List<Date> departureTimes, List<String> ticketInfos) {
         TrainEntity entity = TrainEntity.builder().name(name).routeId(routeId).trainType(type)
-                .date(date).arrivalTimes(arrivalTimes).departureTimes(departureTimes).build();
+                .date(date).arrivalTimes(arrivalTimes).departureTimes(departureTimes).ticketInfos(ticketInfos).build();
         RouteEntity route = routeDao.findById(routeId).get();
         if (route.getStationIds().size() != entity.getArrivalTimes().size()
                 || route.getStationIds().size() != entity.getDepartureTimes().size()) {
@@ -101,7 +102,7 @@ public class TrainServiceImpl implements TrainService {
 
     @Override
     public void changeTrain(Long id, String name, Long routeId, TrainType type, String date, List<Date> arrivalTimes,
-                            List<Date> departureTimes) {
+                            List<Date> departureTimes, List<String> ticketInfos) {
         // TODO: edit train info, please refer to `addTrain` above
 //        6/30
 //        select the train by id and delete 这个方法如果更改消息出错，会把原来火车信息删除，可能有点问题
@@ -121,6 +122,8 @@ public class TrainServiceImpl implements TrainService {
         entity.setDate(date);
         entity.setArrivalTimes(arrivalTimes);
         entity.setDepartureTimes(departureTimes);
+        entity.setTicketInfos(ticketInfos);
+//        entity.setTest(test);
 
         entity.setExtraInfos(new ArrayList<>(Collections.nCopies(route.getStationIds().size(), "预计正点")));
         switch (type) {

@@ -17,4 +17,6 @@ public class AdminTrainVO {
     private List<Date> departureTimes;
     private List<Date> arrivalTimes;
     private List<String> extraInfos;
+    private List<String> ticketInfos;
+//    private List<Byte> test;
 }

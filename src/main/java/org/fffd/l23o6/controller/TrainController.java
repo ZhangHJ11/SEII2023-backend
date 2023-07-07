@@ -1,13 +1,11 @@
 package org.fffd.l23o6.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+
 import io.github.lyc8503.spring.starter.incantation.pojo.CommonResponse;
 
-import org.fffd.l23o6.pojo.vo.train.AddTrainRequest;
-import org.fffd.l23o6.pojo.vo.train.AdminTrainVO;
-import org.fffd.l23o6.pojo.vo.train.ListTrainRequest;
-import org.fffd.l23o6.pojo.vo.train.TrainDetailVO;
-import org.fffd.l23o6.pojo.vo.train.TrainVO;
+import org.fffd.l23o6.pojo.vo.train.*;
 import org.fffd.l23o6.service.TrainService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,8 +39,11 @@ public class TrainController {
     }
 
     @PostMapping("admin/train")
-    public CommonResponse<?> addTrain(@Valid @RequestBody AddTrainRequest request){
-        trainService.addTrain(request.getName(), request.getRouteId(), request.getTrainType(), request.getDate(), request.getArrivalTimes(), request.getDepartureTimes());
+    public CommonResponse<?> addTrain(@Valid @RequestBody AddTrainRequest request) {
+        System.out.println(request);
+//        System.out.println(request.getTest());
+//        for(int i=0;i<request.getTest().length;i++) System.out.println(request.getTest()[i]);
+        trainService.addTrain(request.getName(), request.getRouteId(), request.getTrainType(), request.getDate(), request.getArrivalTimes(), request.getDepartureTimes(), request.getTicketInfos());
         return CommonResponse.success();
     }
 
@@ -55,14 +56,14 @@ public class TrainController {
     public CommonResponse<AdminTrainVO> getTrainAdmin(@PathVariable Long trainId) {
         return CommonResponse.success();
     }
-    
+
     @PutMapping("admin/train/{trainId}")
     public CommonResponse<?> changeTrain(@PathVariable Long trainId, @Valid @RequestBody AddTrainRequest request) {
         trainService.changeTrain(trainId, request.getName(), request.getRouteId(), request.getTrainType(),
-                request.getDate(), request.getArrivalTimes(), request.getDepartureTimes());
+                request.getDate(), request.getArrivalTimes(), request.getDepartureTimes(), request.getTicketInfos());
         return CommonResponse.success();
     }
-    
+
     @DeleteMapping("admin/train/{trainId}")
     public CommonResponse<?> deleteTrain(@PathVariable Long trainId) {
         trainService.deleteTrain(trainId);
