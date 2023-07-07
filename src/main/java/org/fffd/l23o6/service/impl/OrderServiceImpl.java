@@ -140,12 +140,14 @@ public class OrderServiceImpl implements OrderService {
 
         // TODO: refund user's money and credits if needed
         UserEntity user = userDao.findById(order.getUserId()).get();
-        if(payType == 1) {
-            //alipay
-            user.setPoints(user.getPoints() - order.getMoney());
-        }
-        else{
-            user.setPoints(user.getPoints() + order.getMoney() * 10);
+        if(order.getStatus().equals(OrderStatus.PAID)){
+            if(payType == 1) {
+                //alipay
+                user.setPoints(user.getPoints() - order.getMoney());
+            }
+            else{
+                user.setPoints(user.getPoints() + order.getMoney() * 10);
+            }
         }
 
         TrainEntity train = trainDao.findById(order.getTrainId()).get();
@@ -189,7 +191,8 @@ public class OrderServiceImpl implements OrderService {
         else{
             this.paymentStrategy = new PointsPaymentStrategy();
         }
-        String url = paymentStrategy.doPostTest(String.valueOf(orderMoney));
+        double calculatedMoney = priceCalculator(orderMoney, userDao.findById(order.getUserId()).get().getPoints());
+        String url = paymentStrategy.doPostTest(String.valueOf(calculatedMoney));
 
         // TODO: update user's credits, so that user can get discount next time
         UserEntity user = userDao.findById(order.getUserId()).get();
@@ -206,13 +209,13 @@ public class OrderServiceImpl implements OrderService {
         return url;
     }
 
-    public double priceCalculator(double price, int userMiles) {
+    public double priceCalculator(double price, int credits) {
         // 定义里程积分范围和对应的折扣率表格 表驱动
         int[] ranges = { 0, 1000, 3000, 10000, 50000, Integer.MAX_VALUE };
         double[] discounts = { 0, 0.001, 0.0015, 0.002, 0.0025, 0.003 };
         // 判断用户的里程积分属于哪个范围
         int range = 0;
-        while (range < ranges.length - 1 && userMiles >= ranges[range + 1]) {
+        while (range < ranges.length - 1 && credits >= ranges[range + 1]) {
             range++;
         }
         // 根据折扣率计算订单价格
