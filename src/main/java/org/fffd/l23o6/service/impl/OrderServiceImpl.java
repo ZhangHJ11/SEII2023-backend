@@ -132,7 +132,7 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
-    public void cancelOrder(Long id) {
+    public void cancelOrder(Long id,int payType) {
         OrderEntity order = orderDao.findById(id).get();
         if (order.getStatus() == OrderStatus.COMPLETED || order.getStatus() == OrderStatus.CANCELLED) {
             throw new BizException(BizError.ILLEAGAL_ORDER_STATUS);
@@ -140,7 +140,13 @@ public class OrderServiceImpl implements OrderService {
 
         // TODO: refund user's money and credits if needed
         UserEntity user = userDao.findById(order.getUserId()).get();
-        user.setPoints(user.getPoints() + order.getMoney() * 10);
+        if(payType == 1) {
+            //alipay
+            user.setPoints(user.getPoints() - order.getMoney());
+        }
+        else{
+            user.setPoints(user.getPoints() + order.getMoney() * 10);
+        }
 
         TrainEntity train = trainDao.findById(order.getTrainId()).get();
         RouteEntity route = routeDao.findById(train.getRouteId()).get();
@@ -152,8 +158,14 @@ public class OrderServiceImpl implements OrderService {
         System.out.println(order.getSeatType());
 
         print(train.getSeats());
-        GSeriesSeatStrategy.INSTANCE.returnSeat(startStationIndex, endStationIndex,
-                order.getSeatType(),order.getSeat(), train.getSeats());
+        if(train.getTrainType().equals(TrainType.HIGH_SPEED)) {
+            GSeriesSeatStrategy.INSTANCE.returnSeat(startStationIndex, endStationIndex,
+                    order.getSeatType(), order.getSeat(), train.getSeats());
+        }
+        else{
+            KSeriesSeatStrategy.INSTANCE.returnSeat(startStationIndex, endStationIndex,
+                    order.getSeatType(), order.getSeat(), train.getSeats());
+        }
         print(train.getSeats());
 
         order.setStatus(OrderStatus.CANCELLED);
@@ -164,7 +176,6 @@ public class OrderServiceImpl implements OrderService {
 
     public String payOrder(Long id,int payType) {
         OrderEntity order = orderDao.findById(id).get();
-
 
         if (order.getStatus() != OrderStatus.PENDING_PAYMENT) {
             throw new BizException(BizError.ILLEAGAL_ORDER_STATUS);

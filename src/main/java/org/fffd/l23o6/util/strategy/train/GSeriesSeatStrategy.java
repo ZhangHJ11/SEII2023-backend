@@ -77,19 +77,23 @@ public class GSeriesSeatStrategy extends TrainSeatStrategy {
             }
         }
         else if(seatType.equals("一等座")){
-            System.out.println("in return");
             for (int i = BUSINESS_SEAT_MAP.size(); i < BUSINESS_SEAT_MAP.size()
                     + FIRST_CLASS_SEAT_MAP.size(); i++) {
-                for (int j = startStationIndex; j < endStationIndex; j++) {
-                    seatMap[j][i] = false;
+                if(seat.equals(FIRST_CLASS_SEAT_MAP.get(i))) {
+                    for (int j = startStationIndex; j < endStationIndex; j++) {
+                        seatMap[j][i] = false;
+                    }
+                    break;
                 }
             }
         }
         else if(seatType.equals("二等座")){
-            System.out.println("in return");
             for (int i = BUSINESS_SEAT_MAP.size() + FIRST_CLASS_SEAT_MAP.size(); i < seatMap[0].length; i++) {
-                for (int j = startStationIndex; j < endStationIndex; j++) {
-                    seatMap[j][i] = false;
+                if(seat.equals(SECOND_CLASS_SEAT_MAP.get(i))) {
+                    for (int j = startStationIndex; j < endStationIndex; j++) {
+                        seatMap[j][i] = false;
+                    }
+                    break;
                 }
             }
         }

@@ -53,7 +53,7 @@ public class OrderController {
 //                orderService.payOrder(orderId);
 //                break;
             case CANCELLED:
-                orderService.cancelOrder(orderId);
+                orderService.cancelOrder(orderId,request.getPayType());
                 break;
             default:
                 throw new BizException(CommonErrorType.ILLEGAL_ARGUMENTS, "Invalid order status.");
