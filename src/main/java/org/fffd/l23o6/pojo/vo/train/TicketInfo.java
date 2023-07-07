@@ -1,10 +1,14 @@
 package org.fffd.l23o6.pojo.vo.train;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -15,6 +19,27 @@ public class TicketInfo implements Serializable {
     private Integer price;
 
 
+    public static List<String> toJsonString(List<TicketInfo> ticketInfoList) throws JsonProcessingException {
+        ArrayList<String> jsonStrings=new ArrayList<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        for(TicketInfo ticketInfo:ticketInfoList) {
+            jsonStrings.add(objectMapper.writeValueAsString(ticketInfo));
+        }
+        return jsonStrings;
+    }
+
+    public static List<TicketInfo> toTicketInfo(List<String> jsonStrings) throws JsonProcessingException {
+        ArrayList<TicketInfo> ticketInfoList=new ArrayList<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        for(String jsonString:jsonStrings) {
+            ticketInfoList.add(objectMapper.readValue(jsonString, TicketInfo.class));
+        }
+        return ticketInfoList;
+    }
+
+
+
+    //abandoned below
     public String toString() {
         return "TicketInfo{" + "type='" + type + '\'' + ", count=" + count + ", price=" + price + '}';
     }
