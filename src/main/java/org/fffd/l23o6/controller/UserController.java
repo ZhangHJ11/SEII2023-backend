@@ -1,16 +1,24 @@
 package org.fffd.l23o6.controller;
 
-import cn.dev33.satoken.stp.StpUtil;
-import io.github.lyc8503.spring.starter.incantation.pojo.CommonResponse;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.fffd.l23o6.mapper.UserMapper;
 import org.fffd.l23o6.pojo.vo.user.EditUserInfoRequest;
 import org.fffd.l23o6.pojo.vo.user.LoginRequest;
 import org.fffd.l23o6.pojo.vo.user.RegisterRequest;
 import org.fffd.l23o6.pojo.vo.user.UserVO;
 import org.fffd.l23o6.service.UserService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import cn.dev33.satoken.stp.StpUtil;
+import io.github.lyc8503.spring.starter.incantation.pojo.CommonResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RestController
@@ -31,7 +39,8 @@ public class UserController {
     @PostMapping("user")
     public CommonResponse<?> register(@Valid @RequestBody RegisterRequest request) {
         // Throws BizException if register failed.
-        userService.register(request.getUsername(), request.getPassword(), request.getName(), request.getIdn(), request.getPhone(), request.getIdType(), request.getIsAdmin());
+        userService.register(request.getUsername(), request.getPassword(), request.getName(), request.getIdn(),
+                request.getPhone(), request.getId_type(), request.getAdmin());
 
         return CommonResponse.success();
     }
@@ -45,13 +54,17 @@ public class UserController {
     @GetMapping("user")
     public CommonResponse<UserVO> userInfo() {
         StpUtil.checkLogin();
-        return CommonResponse.success(UserMapper.INSTANCE.toUserVO(userService.findByUserName(String.valueOf(StpUtil.getLoginId()))));
+        return CommonResponse.success(
+                UserMapper.INSTANCE.toUserVO(userService.findByUserName(String.valueOf(StpUtil.getLoginId()))));
     }
 
     @PutMapping("user")
     public CommonResponse<?> editInfo(@Valid @RequestBody EditUserInfoRequest request) {
         StpUtil.checkLogin();
-        userService.editInfo(StpUtil.getLoginIdAsString(), request.getName(), request.getIdn(), request.getPhone(), request.getIdType());
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println(request.toString());
+        userService.editInfo(request.getUsername(), request.getName(), request.getIdn(), request.getPhone(),
+                request.getId_type());
         return CommonResponse.success();
     }
 }

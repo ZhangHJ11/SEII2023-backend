@@ -9,5 +9,5 @@ public interface UserService {
 
     UserEntity findByUserName(String username);
 
-    void editInfo(String username, String name, String idn, String phone, int idType);
+    void editInfo(String username, String name, String idn, String phone, int id_type);
 }
