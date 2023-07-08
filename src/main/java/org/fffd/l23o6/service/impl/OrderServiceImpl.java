@@ -48,11 +48,13 @@ public class OrderServiceImpl implements OrderService {
         print(train.getSeats());
         switch (train.getTrainType()) {
             case HIGH_SPEED:
-                seat = GSeriesSeatStrategy.getInstance(train).allocSeat(startStationIndex, endStationIndex,
+                System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+                System.out.println(train.getName());
+                seat = GSeriesSeatStrategy.getInstance(train, null).allocSeat(startStationIndex, endStationIndex,
                         GSeriesSeatStrategy.GSeriesSeatType.fromString(seatType), train.getSeats());
                 break;
             case NORMAL_SPEED:
-                seat = KSeriesSeatStrategy.INSTANCE.allocSeat(startStationIndex, endStationIndex,
+                seat = KSeriesSeatStrategy.getInstance(train, null).allocSeat(startStationIndex, endStationIndex,
                         KSeriesSeatStrategy.KSeriesSeatType.fromString(seatType), train.getSeats());
                 break;
         }
@@ -160,10 +162,10 @@ public class OrderServiceImpl implements OrderService {
 
         print(train.getSeats());
         if (train.getTrainType().equals(TrainType.HIGH_SPEED)) {
-            GSeriesSeatStrategy.getInstance(train).returnSeat(startStationIndex, endStationIndex,
+            GSeriesSeatStrategy.getInstance(train, null).returnSeat(startStationIndex, endStationIndex,
                     order.getSeatType(), order.getSeat(), train.getSeats());
         } else {
-            KSeriesSeatStrategy.INSTANCE.returnSeat(startStationIndex, endStationIndex,
+            KSeriesSeatStrategy.getInstance(train, null).returnSeat(startStationIndex, endStationIndex,
                     order.getSeatType(), order.getSeat(), train.getSeats());
         }
         print(train.getSeats());

@@ -2,7 +2,6 @@ package org.fffd.l23o6.pojo.entity;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.fffd.l23o6.pojo.enum_.TrainType;
 import org.hibernate.annotations.CreationTimestamp;
@@ -70,13 +69,6 @@ public class TrainEntity {
 
     @NotNull
     private List<String> ticketInfos;
-
-    @NotNull
-    public Map<Integer, String> BUSINESS_SEAT_MAP;
-    @NotNull
-    public Map<Integer, String> FIRST_CLASS_SEAT_MAP;
-    @NotNull
-    public Map<Integer, String> SECOND_CLASS_SEAT_MAP;
 
     // @NotNull
     // private List<Byte> test;

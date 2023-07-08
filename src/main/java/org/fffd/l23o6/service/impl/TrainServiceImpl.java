@@ -95,16 +95,23 @@ public class TrainServiceImpl implements TrainService {
         switch (entity.getTrainType()) {
             case HIGH_SPEED:
                 try {
-                    initGTrainSeat(entity, TicketInfo.toTicketInfo(ticketInfos));
+                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    System.out.println(entity.getName());
                     entity.setSeats(
-                            GSeriesSeatStrategy.getInstance(entity).initSeatMap(route.getStationIds().size()));
+                            GSeriesSeatStrategy.getInstance(entity, TicketInfo.toTicketInfo(ticketInfos))
+                                    .initSeatMap(route.getStationIds().size()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
                 break;
             case NORMAL_SPEED:
-                entity.setSeats(KSeriesSeatStrategy.INSTANCE.initSeatMap(route.getStationIds().size()));
+                try {
+                    entity.setSeats(KSeriesSeatStrategy.getInstance(entity, TicketInfo.toTicketInfo(ticketInfos))
+                            .initSeatMap(route.getStationIds().size()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
         }
         trainDao.save(entity);
@@ -139,15 +146,20 @@ public class TrainServiceImpl implements TrainService {
         switch (type) {
             case HIGH_SPEED:
                 try {
-                    initGTrainSeat(entity, TicketInfo.toTicketInfo(ticketInfos));
-                    entity.setSeats(GSeriesSeatStrategy.getInstance(entity).initSeatMap(route.getStationIds().size()));
+                    entity.setSeats(GSeriesSeatStrategy.getInstance(entity, TicketInfo.toTicketInfo(ticketInfos))
+                            .initSeatMap(route.getStationIds().size()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
             case NORMAL_SPEED:
-                entity.setSeats(KSeriesSeatStrategy.INSTANCE.initSeatMap(route.getStationIds().size()));
-                break;
+                try {
+                    entity.setSeats(KSeriesSeatStrategy.getInstance(entity, TicketInfo.toTicketInfo(ticketInfos))
+                            .initSeatMap(route.getStationIds().size()));
+                    break;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
         }
         trainDao.save(entity);
     }
@@ -157,28 +169,4 @@ public class TrainServiceImpl implements TrainService {
         trainDao.deleteById(id);
     }
 
-    private static void initGTrainSeat(TrainEntity entity, List<TicketInfo> ticketInfoList) {
-        int counter = 1;
-
-        for (TicketInfo t : ticketInfoList) {
-            if (t.type.equals("商务座")) {
-                for (int j = 1; j <= t.count; j++) {
-                    entity.BUSINESS_SEAT_MAP.put(counter, GSeriesSeatStrategy.GeneratedValue(counter, j));
-                    counter++;
-                }
-            } else if (t.type.equals("一等座")) {
-                for (int j = 1; j <= t.count; j++) {
-                    entity.FIRST_CLASS_SEAT_MAP.put(counter,
-                            GSeriesSeatStrategy.GeneratedValue(counter, j));
-                    counter++;
-                }
-            } else if (t.type.equals("二等座")) {
-                for (int j = 1; j <= t.count; j++) {
-                    entity.SECOND_CLASS_SEAT_MAP.put(counter,
-                            GSeriesSeatStrategy.GeneratedValue(counter, j));
-                    counter++;
-                }
-            }
-        }
-    }
 }
